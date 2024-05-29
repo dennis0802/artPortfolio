@@ -1,0 +1,49 @@
+ul{
+  list-style-position: inside;  
+}
+
+img:hover{
+    box-shadow: 0 0 20px rgba(7, 7, 7, 0.2); 
+}
+
+#page p{
+    margin: 0px 60px 0px 60px;
+}
+
+
+
+@media screen and (max-width: 1920px){
+  #editDisplay{
+    width: 480px;
+    height: 270px;
+  }
+
+  #listDisplay{
+    width: 640px;
+    height: 360px;
+  }
+}
+
+@media screen and (max-width: 1366px){
+  #editDisplay{
+    width: 320px;
+    height: 180px;
+  }
+
+  #listDisplay{
+    width: 320px;
+    height: 180px;
+  }
+}
+
+@media screen and (max-width: 360px){
+  #editDisplay{
+    width: 240px;
+    height: 135px;
+  }
+
+  #listDisplay{
+    width: 240px;
+    height: 135px;
+  }
+}

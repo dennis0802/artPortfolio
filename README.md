@@ -1,3 +1,8 @@
+# Art Portfolio
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+NOTE: This app requires its partner repository, **art-portfolio-backend** (https://github.com/dennis0802/artPortfolio-backend), to function properly. The interactions with PostgreSQL and retrieving data from Express come from this repository.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
