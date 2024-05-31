@@ -13,6 +13,7 @@ export default class AddArtwork extends Component{
         this.saveArtwork = this.saveArtwork.bind(this);
         this.newArtwork = this.newArtwork.bind(this);
         this.setMaxCount = this.setMaxCount.bind(this);
+        this.returnToList = this.returnToList.bind(this);
 
         this.state = {
             id: null,
@@ -24,7 +25,8 @@ export default class AddArtwork extends Component{
             reflection: "",
 
             submitted: false,
-            count: 0
+            count: 0,
+            message: ""
         }
     };
 
@@ -108,9 +110,14 @@ export default class AddArtwork extends Component{
           .then(res => {
             console.log('Axios response: ', res)
           })
+          window.scrollTo(0, 0)
           console.log(response.data);
         })
         .catch(e => {
+          this.setState({
+            message: "ERROR"
+          })
+          window.scrollTo(0, 0)
           console.log(e);
         });
     }
@@ -126,10 +133,38 @@ export default class AddArtwork extends Component{
           year: "",
           imageData: "",
           reflection: "",
+          message: "",
 
           count: this.state.count + 1,
           submitted: false
       });
+    }
+
+    // Returning
+    returnToList(){
+      switch(this.state.year){
+        case 2019:
+          window.location = '/y1';
+          break;
+        case 2020:
+          window.location = '/y2';
+          break;
+        case 2021:
+          window.location = '/y3';
+          break;
+        case 2022:
+          window.location = '/y4';
+          break;
+        case 2023:
+          window.location = '/y5';
+          break;
+        case new Date().getFullYear:
+          window.location = '/artwork';
+          break;
+        default:
+          window.location = '/';
+          break;
+      }
     }
   
     render() {
@@ -141,10 +176,31 @@ export default class AddArtwork extends Component{
                 <button className="btn btn-success" onClick={this.newArtwork}>
                   Add Another Artwork
                 </button>
+                <button
+                  className="btn btn-primary mt-2"
+                  onClick={this.returnToList}
+                >
+                  Go to {this.state.year} Art
+                </button>
               </div>
             ) : (
               
               <div>
+              {this.state.message ? 
+              <div style={{color: "red", outline: "1px dashed red"}}>
+                <p style={{fontWeight: "bold"}}>The submission was unsuccessful.</p>
+                <p>Ensure the following is satisfied for a successful submission:</p>
+                <ul>
+                  <li>A title is provided.</li>
+                  <li>An image has been uploaded.</li>
+                  <li>When uploading a file, the size is less than 50MB and is an image format (png, jpg, gif, etc.)</li>
+                  <li>A month is selected.</li>
+                  <li>A numerical year is input.</li>
+                </ul>
+              </div>
+              : 
+              ""}
+
                 <div className="form-group">
                   <label htmlFor="title">Title</label>
                   <input

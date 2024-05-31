@@ -4,6 +4,7 @@ import { withRouter } from '../common/with-router';
 import Image from "react-bootstrap/Image";
 import axios from "axios";
 import '../styles.css';
+import { Button, Modal } from "react-bootstrap";
 
 class Artwork extends Component {
   constructor(props) {
@@ -16,6 +17,9 @@ class Artwork extends Component {
     this.updateArtwork = this.updateArtwork.bind(this);
     this.deleteArtwork = this.deleteArtwork.bind(this);
     this.onChangeImage = this.onChangeImage.bind(this);
+    this.closeDeletePrompt = this.closeDeletePrompt.bind(this);
+    this.launchDeletePrompt = this.launchDeletePrompt.bind(this);
+    this.returnToList = this.returnToList.bind(this);
 
     this.state = {
       currentArtwork: {
@@ -30,7 +34,10 @@ class Artwork extends Component {
       },
       oldArtwork: "",
       newName: "",
-      message: ""
+      prompt: false,
+      error: false,
+      success: false,
+      yearToReturnTo: "",
     };
   }
 
@@ -116,7 +123,8 @@ class Artwork extends Component {
         this.setState({
           currentArtwork: response.data,
           oldArtwork: response.data.imagedata,
-          newName: response.data.imagedata
+          newName: response.data.imagedata,
+          yearToReturnTo: response.data.year
         });
 
         console.log(response.data);
@@ -134,8 +142,11 @@ class Artwork extends Component {
       .then(response => {
         console.log(response.data);
         this.setState({
-          message: "The artwork was updated successfully!"
+          error: false,
+          success: true,
+          yearToReturnTo: response.data.year
         });
+        window.scrollTo(0, 0)
 
         // Image changed
         if(this.state.newName !== this.state.oldArtwork){
@@ -156,8 +167,51 @@ class Artwork extends Component {
 
       })
       .catch(e => {
+        this.setState({
+          error: true,
+          success: false
+        })
+        window.scrollTo(0, 0)
         console.log(e);
       });
+  }
+
+  returnToList(){
+    switch(this.state.yearToReturnTo){
+      case 2019:
+        this.props.router.navigate('/y1');
+        break;
+      case 2020:
+        this.props.router.navigate('/y2');
+        break;
+      case 2021:
+        this.props.router.navigate('/y3');
+        break;
+      case 2022:
+        this.props.router.navigate('/y4');
+        break;
+      case 2023:
+        this.props.router.navigate('/y5');
+        break;
+      case new Date().getFullYear:
+        this.props.router.navigate('/artwork');
+        break;
+      default:
+        this.props.router.navigate('/');
+        break;
+    }
+  }
+
+  launchDeletePrompt(){
+    this.setState({
+      prompt: true
+    })
+  }
+
+  closeDeletePrompt(){
+    this.setState({
+      prompt: false
+    })
   }
 
   deleteArtwork() {
@@ -168,7 +222,8 @@ class Artwork extends Component {
     ArtworkDataService.delete(this.state.currentArtwork.id)
       .then(response => {
         console.log(response.data);
-        this.props.router.navigate('/artwork');
+        this.closeDeletePrompt();
+        this.returnToList();
       })
       .catch(e => {
         console.log(e);
@@ -177,13 +232,57 @@ class Artwork extends Component {
 
   render() {
     const { currentArtwork } = this.state;
-    console.log(this.state.newName + "; " + this.state.oldArtwork)
 
     return (
       <div>
         {currentArtwork ? (
           <div className="edit-form">
+
+            {this.state.success ?  
+              <div style={{color: "green", outline: "1px dashed green"}}>
+                <p>The artwork was successfully updated!</p>
+              </div>
+            : 
+              <div></div>
+            }
+
+            {this.state.error ?  
+              <div style={{color: "red", outline: "1px dashed red"}}>
+                <p>The artwork could not be updated. Ensure for a successful update:</p>
+                <ul>
+                  <li>A title is provided.</li>
+                  <li>An image has been uploaded.</li>
+                  <li>When uploading a file, the size is less than 50MB and is an image format (png, jpg, gif, etc.)</li>
+                  <li>A month is selected.</li>
+                  <li>A numerical year is input.</li>
+                </ul>
+              </div>
+            : 
+              <div></div>
+            }
+
+          <Modal show={this.state.prompt} onHide={this.closeDeletePrompt}>
+            <Modal.Header closeButton>
+              <Modal.Title>Delete Artwork</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to delete artwork {currentArtwork.title}?</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.closeDeletePrompt}>
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={this.deleteArtwork}>
+                Delete
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
             <h4>Artpiece: {currentArtwork.title}</h4>
+            <button
+              className="badge bg-primary mr-2"
+              onClick={this.returnToList}
+            >
+              Return to {this.state.yearToReturnTo} Art
+            </button>
             <form>
               <div className="form-group">
                 <label htmlFor="title">Title</label>
@@ -197,10 +296,11 @@ class Artwork extends Component {
               </div>
 
               <div className="form-group" >
-                  <label htmlFor="imagedata">Current Image:</label>
+                  <label htmlFor="imagedata">Image:</label>
                   <p><b>(Ideally, the image size should be 1920x1080 or similar ratios)</b></p>
-                  <p>{this.state.oldArtwork}</p>
+                  <p>Currently: {this.state.oldArtwork}</p>
                   <Image src={`http://localhost:8080/uploads/${this.state.oldArtwork}`} id="editDisplay" rounded alt="The image could not be found or processed."/><br/><br/>
+                  <p><b>NOTE: Leave the image field blank if you do not want to change the image.</b></p>
                   <input
                     type="file"
                     accept="image/*"
@@ -214,7 +314,7 @@ class Artwork extends Component {
                 </div>
 
               <div className="form-group">
-                <label htmlFor="month">Month</label>
+                <label htmlFor="month">Month Created</label>
                 <select 
                   className="form-control" 
                   id="month"
@@ -237,7 +337,7 @@ class Artwork extends Component {
                 
               </div>
               <div className="form-group">
-                <label htmlFor="year">Year</label>
+                <label htmlFor="year">Year Created</label>
                 <input
                   type="text"
                   className="form-control"
@@ -263,20 +363,19 @@ class Artwork extends Component {
             <br/>
 
             <button
-              className="badge bg-danger mr-2"
-              onClick={this.deleteArtwork}
+              className="badge bg-danger mr-2 mb-3"
+              onClick={this.launchDeletePrompt}
             >
               Delete
             </button>
 
             <button
               type="submit"
-              className="badge bg-success"
+              className="badge bg-success mb-3"
               onClick={this.updateArtwork}
             >
               Update
             </button>
-            <p>{this.state.message}</p>
           </div>
         ) : (
           <div>

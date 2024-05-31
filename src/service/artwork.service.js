@@ -5,6 +5,14 @@ class ArtworkDataService {
     return http.get("/artwork");
   }
 
+  getAllUnpaged(year, title) {
+    return http.get(`/artwork/unpaged/${year}/${title}`);
+  }
+
+  getAllPaged(year, page, size, title) {
+    return http.get(`/artwork/paged/${year}/${page}/${size}/${title}`);
+  }
+
   get(id) {
     return http.get(`/artwork/${id}`);
   }
@@ -30,12 +38,12 @@ class ArtworkDataService {
     return http.delete(`/artwork/artworkByYear/${year}`);
   }
 
-  findByTitle(title) {
-    return http.get(`/artwork/artworkByTitle/${title}`);
+  findByTitle(title, year) {
+    return http.get(`/artwork/artworkByTitle/${title}/${year}`);
   }
 
-  findByYear(year){
-    return http.get(`/artwork/artworkByYear/${year}`)
+  findByYear(year, size){
+    return http.get(`/artwork/artworkByYear/${year}/${size}`)
   }
 
   findMaxID(){
