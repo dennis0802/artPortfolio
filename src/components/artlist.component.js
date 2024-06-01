@@ -1,14 +1,12 @@
 import React, { Component } from "react";
 import ArtworkDataService from "../service/artwork.service";
-import Image from "react-bootstrap/Image";
 import { Link } from "react-router-dom";
 import '../styles.css';
 import { Button, Figure, Modal, Pagination } from "react-bootstrap";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-export type CounterProps = { label?: string };
-export default class ArtList extends Component<CounterProps> {
+export default class ArtList extends Component {
   constructor(props) {
     super(props);
     this.onChangeSearchTitle = this.onChangeSearchTitle.bind(this);
@@ -34,7 +32,6 @@ export default class ArtList extends Component<CounterProps> {
       message: "",
       
       page: 1,
-      count: 0,
       pageSize: 5,
       fullCount: 0,
       pageCount: 1
@@ -50,12 +47,11 @@ export default class ArtList extends Component<CounterProps> {
   // Retrieve artworks through a paging model
   retrieveArtworksPaged() {
     const { searchTitle, page, pageSize } = this.state;
-    const { year = new Date().getFullYear()} = this.props;
+    const year = this.props.year;
 
     ArtworkDataService.getAllPaged(year, page, pageSize, searchTitle)
       .then((response) => {
         
-        console.log(response.data)
         const artworks = response.data;
 
         this.setState({
@@ -70,7 +66,6 @@ export default class ArtList extends Component<CounterProps> {
 
     ArtworkDataService.getAllUnpaged(year, searchTitle)
     .then((response) => {
-      console.log(response.data);
 
       this.setState({
         fullCount: response.data.length,
@@ -139,7 +134,7 @@ export default class ArtList extends Component<CounterProps> {
 
   // Remove all artworks at once
   removeAllArtworks() {
-    const { year = new Date().getFullYear()} = this.props;
+    const year = this.props;
     ArtworkDataService.deleteAllByYear(year)
       .then(response => {
         console.log(response.data);
@@ -170,7 +165,7 @@ export default class ArtList extends Component<CounterProps> {
       })
     }
     else{
-      const { year = new Date().getFullYear()} = this.props;
+      const year = this.props;
       ArtworkDataService.getAllPaged(year, this.state.page, this.state.pageSize, this.state.searchTitle)
       .then(response => {
         this.setState({
@@ -238,7 +233,7 @@ export default class ArtList extends Component<CounterProps> {
 
   render() {
     const { searchTitle, artworks, currentArtwork, currentIndex, pageSize, page } = this.state;
-    const { year = new Date().getFullYear()} = this.props;
+    const year = this.props;
 
     return (
       <div className="list row" style={{marginLeft:"100px"}}>

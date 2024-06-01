@@ -4,7 +4,6 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
 
 function MainNavbar({selected}) {
-    console.log(selected);
     if(selected.id === 1){
         return (
             <header>
