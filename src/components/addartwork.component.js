@@ -1,6 +1,10 @@
 import React, {Component} from "react";
 import ArtworkService from "../service/artwork.service";
 import axios from "axios";
+import Cookies from "universal-cookie";
+import { Navigate } from "react-router-dom";
+
+const cookies = new Cookies();
 
 export default class AddArtwork extends Component{
     constructor(props){
@@ -12,7 +16,7 @@ export default class AddArtwork extends Component{
         this.onChangeYear = this.onChangeYear.bind(this);
         this.saveArtwork = this.saveArtwork.bind(this);
         this.newArtwork = this.newArtwork.bind(this);
-        this.setMaxCount = this.setMaxCount.bind(this);
+        this.getMaxCount = this.getMaxCount.bind(this);
         this.returnToList = this.returnToList.bind(this);
 
         this.state = {
@@ -32,14 +36,14 @@ export default class AddArtwork extends Component{
 
     // On rendering, get max count
     componentDidMount() {
-      this.setMaxCount();
+      this.getMaxCount();
     }
 
     // Get max count for new records (new records will have id of max+1)
-    setMaxCount(){
+    getMaxCount(){
       ArtworkService.findMaxID().then(response => {
         this.setState({
-          count: response.data.max
+          count: response.data.max === null ? 0 : response.data.max
         })
       })
     }
@@ -169,9 +173,11 @@ export default class AddArtwork extends Component{
   
     render() {
       return (
+        <>
+        {cookies.get('role') === 'ADMIN' ?
           <div className="submit-form">
             {this.state.submitted ? (
-              <div>
+              <>
                 <h4>You submitted successfully!</h4>
                 <button className="btn btn-success" onClick={this.newArtwork}>
                   Add Another Artwork
@@ -182,10 +188,10 @@ export default class AddArtwork extends Component{
                 >
                   Go to {this.state.year} Art
                 </button>
-              </div>
+              </>
             ) : (
               
-              <div>
+              <>
               {this.state.message ? 
               <div style={{color: "red", outline: "1px dashed red"}}>
                 <p style={{fontWeight: "bold"}}>The submission was unsuccessful.</p>
@@ -201,7 +207,7 @@ export default class AddArtwork extends Component{
               : 
               ""}
 
-                <div className="form-group">
+                <div className="form-group mt-2">
                   <label htmlFor="title">Title</label>
                   <input
                     type="text"
@@ -214,7 +220,7 @@ export default class AddArtwork extends Component{
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mt-2">
                   <label htmlFor="imagedata">Image</label>
                   <p><b>(Ideally, the image size should be 1920x1080 or similar ratios)</b></p>
                   <input
@@ -228,7 +234,7 @@ export default class AddArtwork extends Component{
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mt-2">
               <label htmlFor="month">Month</label>
               <select 
                 className="form-control" 
@@ -252,7 +258,7 @@ export default class AddArtwork extends Component{
                 <option value="12">December</option>
               </select>
 
-              <div className="form-group">
+              <div className="form-group mt-2">
                   <label htmlFor="year">Year</label>
                   <input
                     type="text"
@@ -265,7 +271,7 @@ export default class AddArtwork extends Component{
                   />
               </div>
 
-              <div className="form-group">
+              <div className="form-group mt-2">
               <label htmlFor="reflection">Reflection</label>
               <textarea 
                 className="form-control"
@@ -280,12 +286,16 @@ export default class AddArtwork extends Component{
               
             </div>
             <br/>
-                <button onClick={this.saveArtwork} className="btn btn-success">
+                <button onClick={this.saveArtwork} className="btn btn-success mb-3">
                   Submit
                 </button>
-              </div>
+              </>
             )}
           </div>
+          :
+            <Navigate replace to="/notAuthenticated" />
+          }
+          </>
         );
     }
   }

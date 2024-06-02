@@ -1,9 +1,11 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import ArtworkDataService from "../service/artwork.service";
 import { Link } from "react-router-dom";
 import '../styles.css';
 import { Button, Figure, Modal, Pagination } from "react-bootstrap";
+import Cookies from "universal-cookie";
 
+const cookies = new Cookies();
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 export default class ArtList extends Component {
@@ -18,10 +20,7 @@ export default class ArtList extends Component {
     this.launchDeletePrompt = this.launchDeletePrompt.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.retrieveArtworksPaged = this.retrieveArtworksPaged.bind(this);
-    this.setFirstPage = this.setFirstPage.bind(this);
-    this.setLastPage = this.setLastPage.bind(this);
-    this.setNextPage = this.setNextPage.bind(this);
-    this.setPreviousPage = this.setPreviousPage.bind(this);
+    this.setPage = this.setPage.bind(this);
 
     this.state = {
       artworks: [],
@@ -79,7 +78,9 @@ export default class ArtList extends Component {
     this.setState(
       {
         pageSize: event.target.value,
-        page: 1
+        page: 1,
+        currentArtwork: null,
+        currentIndex: null
       },
       () => {
         this.retrieveArtworksPaged();
@@ -106,7 +107,7 @@ export default class ArtList extends Component {
     this.retrieveArtworksPaged();
     this.setState({
       currentArtwork: null,
-      currentIndex: -1
+      currentIndex: -1,
     });
   }
 
@@ -134,7 +135,7 @@ export default class ArtList extends Component {
 
   // Remove all artworks at once
   removeAllArtworks() {
-    const year = this.props;
+    const year = this.props.year;
     ArtworkDataService.deleteAllByYear(year)
       .then(response => {
         console.log(response.data);
@@ -161,79 +162,59 @@ export default class ArtList extends Component {
 
       this.setState({
         inputSearch: "",
-        currentIndex: -1
+        currentIndex: -1,
+        currentArtwork: null
       })
     }
     else{
-      const year = this.props;
+      const year = this.props.year;
       ArtworkDataService.getAllPaged(year, this.state.page, this.state.pageSize, this.state.searchTitle)
       .then(response => {
         this.setState({
           artworks: response.data,
-          fullCount: response.data.length,
           inputSearch: this.state.searchTitle,
-          currentIndex: -1
+          currentIndex: -1,
+          currentArtwork: null,
+          page: 1,
         });
         console.log(response.data);
       })
       .catch(e => {
         console.log(e);
       });
+
+      ArtworkDataService.getAllUnpaged(year, this.state.searchTitle)
+      .then((response) => {
+  
+        this.setState({
+          fullCount: response.data.length,
+          pageCount: Math.ceil(response.data.length/this.state.pageSize)
+        })
+      })
+      .catch(e => {
+        console.log(e);
+      })
     }
   }
 
   // Paging
-  setFirstPage(){
-    this.setState({
-      page: 1,
-      currentIndex: -1
-    },
-    () => {
-      this.retrieveArtworksPaged();
-    }
-    );
-  }
-
-  setPreviousPage(){
-    if(this.state.page-1 >= 1){
+  setPage(newPage){
+    if(newPage >= 1 && newPage <= this.state.pageCount){
       this.setState({
-        page: this.state.page-1,
-        currentIndex: -1
+        page: newPage,
+        currentIndex: -1,
+        currentArtwork: null
       },
       () => {
         this.retrieveArtworksPaged();
       }
       );
     }
-  }
-
-  setNextPage(){
-    if(this.state.page + 1 <= this.state.pageCount){
-      this.setState({
-        page: this.state.page+1,
-        currentIndex: -1
-      },
-      () => {
-        this.retrieveArtworksPaged();
-      }
-      );
-    }
-  }
-
-  setLastPage(){
-    this.setState({
-      page: Math.ceil(this.state.fullCount/this.state.pageSize),
-      currentIndex: -1
-    },
-    () => {
-      this.retrieveArtworksPaged();
-    }
-    );
   }
 
   render() {
     const { searchTitle, artworks, currentArtwork, currentIndex, pageSize, page } = this.state;
-    const year = this.props;
+    const year = this.props.year;
 
     return (
       <div className="list row" style={{marginLeft:"100px"}}>
@@ -287,22 +268,26 @@ export default class ArtList extends Component {
 
           <div className="mt-2">
             <Pagination>
-              <Pagination.First onClick={this.setFirstPage}/>
-              <Pagination.Prev onClick={this.setPreviousPage}/> 
+              <Pagination.First onClick={() => this.setPage(1)}/>
+              <Pagination.Prev onClick={() => this.setPage(this.state.page-1)}/> 
               <Pagination.Item active>{page}</Pagination.Item>
-              <Pagination.Next onClick={this.setNextPage}/>
-              <Pagination.Last onClick={this.setLastPage}/>
+              <Pagination.Next onClick={() => this.setPage(this.state.page+1)}/>
+              <Pagination.Last onClick={() => this.setPage(this.state.pageCount)}/>
             </Pagination>
           </div>
 
-          {this.state.message ? <div style={{color:"green", outline: "1px green dashed"}}><p>All {year} artworks successfully deleted!</p></div>: <div></div>}
+          {this.state.message ? <div style={{color:"green", outline: "1px green dashed"}}><p>All {year} artworks successfully deleted!</p></div>: <Fragment></Fragment>}
           <p>If you are unable to find a specific piece, please check another art year or try searching for its title.</p>
-          <button
-            className="m-3 btn btn-sm btn-primary"
-            onClick={this.addArtwork}
-          >
-            Add an Artwork
-          </button>
+          {cookies.get('role') === 'ADMIN' ? 
+            <button
+              className="m-3 btn btn-sm btn-primary"
+              onClick={this.addArtwork}
+            >
+              Add an Artwork
+            </button>
+          : 
+            ""
+          }
 
           <ul className="list-group">
             {artworks.length !== 0 ? artworks &&
@@ -329,23 +314,27 @@ export default class ArtList extends Component {
 
           <p>Page {page} of {this.state.pageCount === 0 ? 1 : this.state.pageCount}</p>
           
-          <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.launchDeletePrompt}
-          >
-            Remove All
-          </button>
+          {cookies.get('role') === 'ADMIN' ? 
+            <button
+              className="m-3 btn btn-sm btn-danger"
+              onClick={this.launchDeletePrompt}
+            >
+              Remove All
+            </button>
+          :
+          ""
+          }
 
         </div>
         <div className="col-md-6">
           {currentArtwork ? (
-            <div>
-              <div>
+            <Fragment>
+              <Fragment>
                 <label>
                   <h3>{currentArtwork.title}</h3>
                 </label>{" "}
-              </div>
-              <div>
+              </Fragment>
+              <Fragment>
               <Figure>
                 <Figure.Image
                   alt="The image could not be found or processed."
@@ -356,27 +345,32 @@ export default class ArtList extends Component {
                   {currentArtwork.reflection}
                 </Figure.Caption>
               </Figure>
-              </div>
-              <div>
+              </Fragment>
+              <Fragment>
                 <label>
                   <strong>Created:</strong>
                 </label>{" "}
                 {months[currentArtwork.month-1]} {currentArtwork.year}
-              </div>
+              </Fragment>
+              <br/>
 
-              <Link
-                to={"/artwork/" + currentArtwork.id}
-                className="badge bg-warning"
-                style={{color: "black"}}
-              >
-                Edit
-              </Link>
-            </div>
+              {cookies.get('role') === 'ADMIN' ? 
+                <Link
+                  to={"/artwork/" + currentArtwork.id}
+                  className="badge bg-warning mb-3"
+                  style={{color: "black"}}
+                >
+                  Edit
+                </Link>
+              :
+                ""
+              }
+            </Fragment>
           ) : (
-            <div>
+            <Fragment>
               <br />
               <p>Please click on a Artwork...</p>
-            </div>
+            </Fragment>
           )}
         </div>
       </div>

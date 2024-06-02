@@ -6,7 +6,7 @@ const ArtworkIndividual = () => {
     return (
         <div className="App">
             <div id="page">
-                <MainNavbar selected={-1}/>
+                <MainNavbar selected={{id:3}}/>
                 <br/>
                 <Artwork />
             </div>

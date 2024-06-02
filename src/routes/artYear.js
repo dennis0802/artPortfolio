@@ -6,7 +6,7 @@ const ArtYear = (year) => {
     return (
         <div className="App">
             <div id="page">
-                <MainNavbar selected={{id:4}}/>
+                <MainNavbar selected={{id:3}}/>
                 <h1 style={{marginTop: "20px"}}>{year.yearStart} Art</h1>
                 <ArtList year={year.yearStart}/>
             </div>

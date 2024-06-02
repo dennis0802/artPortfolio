@@ -6,6 +6,10 @@ import About from './routes/about';
 import ArtYear from './routes/artYear';
 import Artwork from './routes/artworkIndividual';
 import NewArtwork from './routes/newArtwork';
+import LoginPage from './routes/login';
+import LogoutPage from './routes/logout';
+import CreateAccount from './routes/createAccount';
+import NotAuthenticated from './routes/notAuthenticated';
 
 function App() {
   return(
@@ -22,6 +26,11 @@ function App() {
             <Route path="/y3" element={<ArtYear yearStart={2021}/>}/>
             <Route path="/y4" element={<ArtYear yearStart={2022}/>}/>
             <Route path="/y5" element={<ArtYear yearStart={2023}/>}/>
+            <Route path="/login" element={<LoginPage />}/> 
+            <Route path="/logout" element={<LogoutPage />}/>
+            <Route path="/createAccount" element={<CreateAccount />}/>
+            <Route path="/notAuthenticated" element={<NotAuthenticated />}/>
+            <Route path="/recoverPassword" />
         </Routes>
     </Router>
   )

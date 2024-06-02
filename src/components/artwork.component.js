@@ -1,10 +1,14 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import ArtworkDataService from "../service/artwork.service";
 import { withRouter } from '../common/with-router';
 import Image from "react-bootstrap/Image";
 import axios from "axios";
 import '../styles.css';
 import { Button, Modal } from "react-bootstrap";
+import Cookies from "universal-cookie";
+import { Navigate } from "react-router-dom";
+
+const cookies = new Cookies();
 
 class Artwork extends Component {
   constructor(props) {
@@ -234,156 +238,162 @@ class Artwork extends Component {
     const { currentArtwork } = this.state;
 
     return (
-      <div>
-        {currentArtwork ? (
-          <div className="edit-form">
+      <>
+        {cookies.get('role') === 'ADMIN' ?
+        <div>
+          {currentArtwork ? (
+            <div className="edit-form">
 
-            {this.state.success ?  
-              <div style={{color: "green", outline: "1px dashed green"}}>
-                <p>The artwork was successfully updated!</p>
-              </div>
-            : 
-              <div></div>
-            }
+              {this.state.success ?  
+                <div style={{color: "green", outline: "1px dashed green"}}>
+                  <p>The artwork was successfully updated!</p>
+                </div>
+              : 
+                <Fragment></Fragment>
+              }
 
-            {this.state.error ?  
-              <div style={{color: "red", outline: "1px dashed red"}}>
-                <p>The artwork could not be updated. Ensure for a successful update:</p>
-                <ul>
-                  <li>A title is provided.</li>
-                  <li>An image has been uploaded.</li>
-                  <li>When uploading a file, the size is less than 50MB and is an image format (png, jpg, gif, etc.)</li>
-                  <li>A month is selected.</li>
-                  <li>A numerical year is input.</li>
-                </ul>
-              </div>
-            : 
-              <div></div>
-            }
+              {this.state.error ?  
+                <div style={{color: "red", outline: "1px dashed red"}}>
+                  <p>The artwork could not be updated. Ensure for a successful update:</p>
+                  <ul>
+                    <li>A title is provided.</li>
+                    <li>An image has been uploaded.</li>
+                    <li>When uploading a file, the size is less than 50MB and is an image format (png, jpg, gif, etc.)</li>
+                    <li>A month is selected.</li>
+                    <li>A numerical year is input.</li>
+                  </ul>
+                </div>
+              : 
+                <Fragment></Fragment>
+              }
 
-          <Modal show={this.state.prompt} onHide={this.closeDeletePrompt}>
-            <Modal.Header closeButton>
-              <Modal.Title>Delete Artwork</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>Are you sure you want to delete artwork {currentArtwork.title}?</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={this.closeDeletePrompt}>
-                Cancel
-              </Button>
-              <Button variant="danger" onClick={this.deleteArtwork}>
-                Delete
-              </Button>
-            </Modal.Footer>
-          </Modal>
+            <Modal show={this.state.prompt} onHide={this.closeDeletePrompt}>
+              <Modal.Header closeButton>
+                <Modal.Title>Delete Artwork</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>Are you sure you want to delete artwork {currentArtwork.title}?</Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={this.closeDeletePrompt}>
+                  Cancel
+                </Button>
+                <Button variant="danger" onClick={this.deleteArtwork}>
+                  Delete
+                </Button>
+              </Modal.Footer>
+            </Modal>
 
-            <h4>Artpiece: {currentArtwork.title}</h4>
-            <button
-              className="badge bg-primary mr-2"
-              onClick={this.returnToList}
-            >
-              Return to {this.state.yearToReturnTo} Art
-            </button>
-            <form>
-              <div className="form-group">
-                <label htmlFor="title">Title</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="title"
-                  value={currentArtwork.title}
-                  onChange={this.onChangeTitle}
-                />
-              </div>
-
-              <div className="form-group" >
-                  <label htmlFor="imagedata">Image:</label>
-                  <p><b>(Ideally, the image size should be 1920x1080 or similar ratios)</b></p>
-                  <p>Currently: {this.state.oldArtwork}</p>
-                  <Image src={`http://localhost:8080/uploads/${this.state.oldArtwork}`} id="editDisplay" rounded alt="The image could not be found or processed."/><br/><br/>
-                  <p><b>NOTE: Leave the image field blank if you do not want to change the image.</b></p>
+              <h4>Artpiece: {currentArtwork.title}</h4>
+              <button
+                className="badge bg-primary mr-2"
+                onClick={this.returnToList}
+              >
+                Return to {this.state.yearToReturnTo} Art
+              </button>
+              <form>
+                <div className="form-group mt-2">
+                  <label htmlFor="title">Title</label>
                   <input
-                    type="file"
-                    accept="image/*"
+                    type="text"
                     className="form-control"
-                    id="imagedata"
-                    required
-                    onChange={this.onChangeImage}
-
-                    name="imagedata"
+                    id="title"
+                    value={currentArtwork.title}
+                    onChange={this.onChangeTitle}
                   />
                 </div>
 
-              <div className="form-group">
-                <label htmlFor="month">Month Created</label>
-                <select 
-                  className="form-control" 
-                  id="month"
-                  value={currentArtwork.month}
-                  onChange={this.onChangeMonth}
-                >
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
-                  <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
-                </select>
-                
-              </div>
-              <div className="form-group">
-                <label htmlFor="year">Year Created</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="year"
-                  value={currentArtwork.year}
-                  onChange={this.onChangeYear}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="reflection">Reflection</label>
-                <textarea 
-                  className="form-control"
-                  id="reflection"
-                  onChange={this.onChangeReflection}
-                  rows="15"
-                  value={currentArtwork.reflection}
-                >
+                <div className="form-group mt-2" >
+                    <label htmlFor="imagedata">Image:</label>
+                    <p><b>(Ideally, the image size should be 1920x1080 or similar ratios)</b></p>
+                    <p>Currently: {this.state.oldArtwork}</p>
+                    <p><b>NOTE: Leave the image field blank if you do not want to change the image.</b></p>
+                    <Image src={`http://localhost:8080/uploads/${this.state.oldArtwork}`} id="editDisplay" rounded alt="The image could not be found or processed."/><br/><br/>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="form-control"
+                      id="imagedata"
+                      required
+                      onChange={this.onChangeImage}
+
+                      name="imagedata"
+                    />
+                  </div>
+
+                <div className="form-group mt-2">
+                  <label htmlFor="month">Month Created</label>
+                  <select 
+                    className="form-control" 
+                    id="month"
+                    value={currentArtwork.month}
+                    onChange={this.onChangeMonth}
+                  >
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </select>
                   
-                </textarea>
-              </div>
+                </div>
+                <div className="form-group mt-2">
+                  <label htmlFor="year">Year Created</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="year"
+                    value={currentArtwork.year}
+                    onChange={this.onChangeYear}
+                  />
+                </div>
+                <div className="form-group mt-2">
+                  <label htmlFor="reflection">Reflection</label>
+                  <textarea 
+                    className="form-control"
+                    id="reflection"
+                    onChange={this.onChangeReflection}
+                    rows="15"
+                    value={currentArtwork.reflection}
+                  >
+                    
+                  </textarea>
+                </div>
 
-            </form>
-            <br/>
+              </form>
+              <br/>
 
-            <button
-              className="badge bg-danger mr-2 mb-3"
-              onClick={this.launchDeletePrompt}
-            >
-              Delete
-            </button>
+              <button
+                className="badge bg-danger mr-2 mb-3"
+                onClick={this.launchDeletePrompt}
+              >
+                Delete
+              </button>
 
-            <button
-              type="submit"
-              className="badge bg-success mb-3"
-              onClick={this.updateArtwork}
-            >
-              Update
-            </button>
-          </div>
-        ) : (
-          <div>
-            <br />
-            <p>Please click on a Artwork...</p>
-          </div>
-        )}
-      </div>
+              <button
+                type="submit"
+                className="badge bg-success mb-3"
+                onClick={this.updateArtwork}
+              >
+                Update
+              </button>
+            </div>
+          ) : (
+            <Fragment>
+              <br />
+              <p>Please click on a Artwork...</p>
+            </Fragment>
+          )}
+        </div>
+        :
+          <Navigate replace to="/notAuthenticated" />
+        }
+      </>
     );
   }
 }

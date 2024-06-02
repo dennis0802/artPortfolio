@@ -2,7 +2,10 @@ import React from "react";
 import MainNavbar from "../components/navbar.component";
 import "../styles.css";
 import Figure from "react-bootstrap/Figure";
- 
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
+
 const Home = () => {
     return (
         <div className="App">
@@ -21,7 +24,7 @@ const Home = () => {
                     <li><a href="/index">Home</a></li>
                     <li><a href="/about">About</a></li>
                     <li>
-                        Archive
+                        Artwork
                         <ul>
                             <li><a href="/y1">Year 1 (2019)</a></li>
                             <li><a href="/y2">Year 2 (2020)</a></li>
@@ -31,6 +34,14 @@ const Home = () => {
                             <li><a href="/artwork">Current Year</a></li>
                         </ul>
                     </li>
+                    {cookies.get('user') ?
+                        <>
+                            <li><a href="/account">Manage Your Info</a></li>
+                            <li><a href="/logout">Logout</a></li>
+                        </>
+                    :
+                        ""
+                    }
                 </ul>
             </div>
         </div>

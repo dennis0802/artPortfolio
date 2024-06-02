@@ -10,8 +10,8 @@ const About = () => {
                 <MainNavbar selected={{id:2}}/>
                 <h1 style={{marginTop: "20px"}}>About Me</h1>
                 <Figure>
-                    <Figure.Image src="./img/sage.jpg" width={300} height={300} alt="Me" rounded/>
-                    <Figure.Caption>A depiction of myself</Figure.Caption>
+                    <Figure.Image src="./img/everywhere.png" width={300} height={300} alt="My inspiration for my artwork" rounded/>
+                    <Figure.Caption>My largest and most abstract project, and filled with the people that inspire me to make great artwork.</Figure.Caption>
                 </Figure>
                 <p>
                     Hi there, I'm Dennis. Since starting on visual arts hobbies more heavily in May 2019, I've developed a cartoon-ish/realism style that I enjoy making pieces 
