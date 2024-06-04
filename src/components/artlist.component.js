@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import ArtworkDataService from "../service/artwork.service";
 import { Link } from "react-router-dom";
 import '../styles.css';
-import { Button, Figure, Modal, Pagination } from "react-bootstrap";
+import { Button, Figure, Image, Modal, Pagination } from "react-bootstrap";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
@@ -21,6 +21,8 @@ export default class ArtList extends Component {
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.retrieveArtworksPaged = this.retrieveArtworksPaged.bind(this);
     this.setPage = this.setPage.bind(this);
+    this.launchEnlarge = this.launchEnlarge.bind(this);
+    this.closeEnlarge = this.closeEnlarge.bind(this);
 
     this.state = {
       artworks: [],
@@ -28,6 +30,7 @@ export default class ArtList extends Component {
       currentIndex: -1,
       searchTitle: "",
       prompt: false,
+      enlarge: false,
       message: "",
       
       page: 1,
@@ -130,6 +133,20 @@ export default class ArtList extends Component {
   closeDeletePrompt(){
     this.setState({
       prompt: false
+    })
+  }
+
+  // Enlarge the image
+  launchEnlarge(){
+    this.setState({
+      enlarge: true
+    })
+  }
+
+  // Close the deletion prompt
+  closeEnlarge(){
+    this.setState({
+      enlarge: false
     })
   }
 
@@ -278,6 +295,7 @@ export default class ArtList extends Component {
 
           {this.state.message ? <div style={{color:"green", outline: "1px green dashed"}}><p>All {year} artworks successfully deleted!</p></div>: <Fragment></Fragment>}
           <p>If you are unable to find a specific piece, please check another art year or try searching for its title.</p>
+          <p>Try clicking a selected artwork's image to enlarge it!</p>
           {cookies.get('role') === 'ADMIN' ? 
             <button
               className="m-3 btn btn-sm btn-primary"
@@ -289,7 +307,7 @@ export default class ArtList extends Component {
             ""
           }
 
-          <ul className="list-group">
+          <ul className="list-group mt-3">
             {artworks.length !== 0 ? artworks &&
               artworks.map((artwork, index) => (
                 <li
@@ -329,6 +347,30 @@ export default class ArtList extends Component {
         <div className="col-md-6">
           {currentArtwork ? (
             <Fragment>
+                <Modal show={this.state.enlarge} onHide={this.closeEnlarge} className="modal-lg">
+                <Modal.Header closeButton>
+                  <Modal.Title>{currentArtwork.title}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="text-center">
+                  <Image 
+                      alt="The image could not be found or processed."
+                      src={`http://localhost:8080/uploads/${currentArtwork.imagedata}`}
+                      rounded
+                      className="img-fluid"
+                  />
+                  <div className="mt-3">
+                    {currentArtwork.reflection}
+                  </div>
+                  <div className="mt-3">
+                    <b>Created:</b> {months[currentArtwork.month-1]} {currentArtwork.year}
+                  </div>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="danger" onClick={this.closeEnlarge}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
               <Fragment>
                 <label>
                   <h3>{currentArtwork.title}</h3>
@@ -339,6 +381,7 @@ export default class ArtList extends Component {
                 <Figure.Image
                   alt="The image could not be found or processed."
                   src={`http://localhost:8080/uploads/${currentArtwork.imagedata}`}
+                  onClick={this.launchEnlarge}
                   rounded
                 />
                 <Figure.Caption>

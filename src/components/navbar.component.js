@@ -74,6 +74,15 @@ function MainNavbar({selected}) {
                       <Nav.Link href="/login">Login</Nav.Link>
                     }
 
+                    {cookies.get('role') === 'ADMIN' ? 
+                      selected.id === 5 ?
+                      <Nav.Link href="/users" style={{backgroundColor:"#000000", borderRadius: "10px"}}>View Users</Nav.Link>
+                      :
+                      <Nav.Link href="/users" >View Users</Nav.Link> 
+                    :
+                    ""
+                    }
+
                   </Nav>
                 </Navbar.Collapse>
               </Container>

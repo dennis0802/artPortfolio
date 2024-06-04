@@ -197,7 +197,7 @@ class Artwork extends Component {
       case 2023:
         this.props.router.navigate('/y5');
         break;
-      case new Date().getFullYear:
+      case new Date().getFullYear():
         this.props.router.navigate('/artwork');
         break;
       default:
@@ -306,7 +306,13 @@ class Artwork extends Component {
                     <p><b>(Ideally, the image size should be 1920x1080 or similar ratios)</b></p>
                     <p>Currently: {this.state.oldArtwork}</p>
                     <p><b>NOTE: Leave the image field blank if you do not want to change the image.</b></p>
-                    <Image src={`http://localhost:8080/uploads/${this.state.oldArtwork}`} id="editDisplay" rounded alt="The image could not be found or processed."/><br/><br/>
+                    <Image 
+                      src={`http://localhost:8080/uploads/${this.state.oldArtwork}`} 
+                      rounded 
+                      alt="The image could not be found or processed."
+                      className="mb-3"
+                      fluid
+                    />
                     <input
                       type="file"
                       accept="image/*"

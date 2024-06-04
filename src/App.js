@@ -10,6 +10,9 @@ import LoginPage from './routes/login';
 import LogoutPage from './routes/logout';
 import CreateAccount from './routes/createAccount';
 import NotAuthenticated from './routes/notAuthenticated';
+import AccountPage from './routes/account';
+import Users from './routes/users';
+import RecoveryPage from './routes/recoverPassword';
 
 function App() {
   return(
@@ -30,7 +33,9 @@ function App() {
             <Route path="/logout" element={<LogoutPage />}/>
             <Route path="/createAccount" element={<CreateAccount />}/>
             <Route path="/notAuthenticated" element={<NotAuthenticated />}/>
-            <Route path="/recoverPassword" />
+            <Route path="/recoverPassword" element={<RecoveryPage />}/>
+            <Route path="/account" element={<AccountPage />}/>
+            <Route path="/users" element={<Users />}/>
         </Routes>
     </Router>
   )

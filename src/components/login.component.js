@@ -5,6 +5,7 @@ import Cookies from "universal-cookie"
 import { Navigate } from 'react-router-dom';
 
 const cookies = new Cookies();
+const date = new Date();
 
 class LoginForm extends Component{
     constructor(props){
@@ -18,7 +19,10 @@ class LoginForm extends Component{
         this.state = {
             username: "",
             password: "",
-            failure: false
+            failure: false,
+            currentUser: {
+                last_login: date
+            }
         }
     }
 
@@ -53,9 +57,18 @@ class LoginForm extends Component{
                             if(success){
                                 this.setState({
                                     failure: false,
+                                    currentUser: response.data[0]
                                 })
+                                console.log(response.data[0]);
                                 cookies.set("user", response.data[0].username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
                                 cookies.set("role", response.data[0].role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+
+                                // Change last login
+                                UserDataService.updateLogin(this.state.username, this.state.currentUser)
+                                .then(res =>{
+                                    console.log(res);
+                                })
+
                                 this.props.router.navigate("/");
                             }
                             else{

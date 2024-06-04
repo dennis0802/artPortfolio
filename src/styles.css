@@ -10,40 +10,28 @@ img:hover{
     margin: 0px 60px 0px 60px;
 }
 
-
-
-@media screen and (max-width: 1920px){
-  #editDisplay{
-    width: 480px;
-    height: 270px;
-  }
-
-  #listDisplay{
-    width: 640px;
-    height: 360px;
-  }
+.line-1{
+  top: 50%;  
+  width: 15.5em;
+  margin: 0 auto;
+  border-right: 2px solid rgba(255,255,255,.75);
+  font-size: 180%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  transform: translateY(-50%);    
 }
 
-@media screen and (max-width: 1366px){
-  #editDisplay{
-    width: 320px;
-    height: 180px;
-  }
-
-  #listDisplay{
-    width: 320px;
-    height: 180px;
-  }
+/* Animation */
+.anim-typewriter{
+animation: typewriter 4s steps(50) 1s 1 normal both,
+           blinkTextCursor 750ms steps(50) infinite normal;
 }
-
-@media screen and (max-width: 360px){
-  #editDisplay{
-    width: 240px;
-    height: 135px;
-  }
-
-  #listDisplay{
-    width: 240px;
-    height: 135px;
-  }
+@keyframes typewriter{
+  from{width: 0;}
+  to{width: 15.5em;}
+}
+@keyframes blinkTextCursor{
+  from{border-right-color: #1d305abf; height:25px}
+  to{border-right-color: transparent; height:25px}
 }

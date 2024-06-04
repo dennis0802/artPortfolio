@@ -2,6 +2,7 @@ import React from "react";
 import MainNavbar from "../components/navbar.component";
 import Figure from "react-bootstrap/Figure"; 
 import Table from 'react-bootstrap/Table';
+import '../styles.css';
 
 const About = () => {
     return (
@@ -11,10 +12,17 @@ const About = () => {
                 <h1 style={{marginTop: "20px"}}>About Me</h1>
                 <Figure>
                     <Figure.Image src="./img/everywhere.png" width={300} height={300} alt="My inspiration for my artwork" rounded/>
-                    <Figure.Caption>My largest and most abstract project, and filled with the people that inspire me to make great artwork.</Figure.Caption>
+                    <Figure.Caption>
+                        My largest and most abstract project, and filled with the people that inspire me to make great artwork.
+                        Made in April 2023, I've named this after the iconic film <i>Everything Everywhere All at Once</i> and its poster.
+                    </Figure.Caption>
                 </Figure>
+
+                <div className="line-1 anim-typewriter mt-3" >
+                    <h6 style={{fontWeight: "bold"}}>Hi there, I'm Dennis - a web developer and a digital artist.</h6>
+                </div>
                 <p>
-                    Hi there, I'm Dennis. Since starting on visual arts hobbies more heavily in May 2019, I've developed a cartoon-ish/realism style that I enjoy making pieces 
+                    Since starting on visual arts hobbies more heavily in May 2019, I've developed a cartoon-ish/realism style that I enjoy making pieces 
                     for my friends. I work in a variety of mediums, ranging from digital art using GIMP to traditional acrylics and watercolours on paper/canvas.
                 </p>
                 <br/>
