@@ -259,7 +259,7 @@ export default class ArtList extends Component {
     return (
       <>
       {!this.state.pageLoading ? 
-        <div className="list row" style={{marginLeft:"100px"}}>
+        (<div className="list row" style={{marginLeft:"100px"}}>
           <Modal show={this.state.prompt} onHide={this.closeDeletePrompt}>
           <Modal.Header closeButton>
             <Modal.Title>Delete All {year} Artwork</Modal.Title>
@@ -456,19 +456,19 @@ export default class ArtList extends Component {
               </Fragment>
             )}
           </div>
-        </div>
+        </div>)
         :
-        <div>
+        (<div>
           
           {this.state.networkError ?
-            <p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>
+            (<p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>)
           :
-            <>
+            (<>
               <LoadingComponent />
               <p>Loading...</p>
-            </>
+            </>)
           }
-        </div>
+        </div>)
         }
       </>
     );

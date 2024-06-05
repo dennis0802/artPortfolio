@@ -236,7 +236,7 @@ class Account extends Component{
         return(
         <>
         {cookies.get('role') ?
-        <div>
+        (<div>
           {currentUser ? (
             <div className="edit-form">
 
@@ -389,7 +389,7 @@ class Account extends Component{
               <p>Please click on a User..</p>
             </Fragment>
           )}
-        </div>
+        </div>)
         :
           <Navigate replace to="/notAuthenticated" />
         }

@@ -247,18 +247,18 @@ class Artwork extends Component {
     return (
       <>
         {this.state.pageLoaded ?
-        <>
+        (<>
           {cookies.get('role') === 'ADMIN' ?
           <div>
             {currentArtwork ? (
               <div className="edit-form">
 
                 {this.state.success ?  
-                  <div style={{color: "green", outline: "1px dashed green"}}>
+                  (<div style={{color: "green", outline: "1px dashed green"}}>
                     <p>The artwork was successfully updated!</p>
-                  </div>
+                  </div>)
                 : 
-                  <Fragment></Fragment>
+                  (<Fragment></Fragment>)
                 }
 
                 {this.state.error ?  
@@ -408,9 +408,9 @@ class Artwork extends Component {
           :
             <Navigate replace to="/notAuthenticated" />
           }
-        </>
+        </>)
         :
-        <>
+        (<>
           {this.state.networkError ?
             <p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>
             :
@@ -419,7 +419,7 @@ class Artwork extends Component {
                 <p>Loading...</p>
             </>
           }
-        </>
+        </>)
         }
       </>
     );

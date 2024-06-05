@@ -175,9 +175,9 @@ class AccountForm extends Component{
         return(
             <>
             {!cookies.get('role') ?
-                <>
+                (<>
                     {!this.state.submitted ? 
-                    <div className="submit-form">
+                    (<div className="submit-form">
                         {this.state.failure ? 
                         <div style={{color: "red", outline: "1px dashed red"}}>
                             <p style={{fontWeight: "bold"}}>The submission was unsuccessful.</p>
@@ -276,22 +276,22 @@ class AccountForm extends Component{
                         <button onClick={this.returnToLogin} className="btn btn-danger mt-1 mb-1">
                         Return to Login
                         </button><br/>
-                    </div>
+                    </div>)
                     :
-                    <>
+                    (<>
                         {this.state.networkError ?
-                            <p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>
+                            (<p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>)
                         :
                         <>
-                            <LoadingComponent />
-                            <p>{this.state.initialLoad ? "Creating your account..." : "Loading..." }</p>
+                            (<LoadingComponent />
+                            <p>{this.state.initialLoad ? "Creating your account..." : "Loading..." }</p>)
                         </>
                         }
-                    </>
+                    </>)
                     }
-                </>
+                </>)
                 :
-                    <Navigate replace to="/index" />
+                    (<Navigate replace to="/index" />)
                 }   
             </>
         )

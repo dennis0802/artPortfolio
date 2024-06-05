@@ -207,7 +207,7 @@ export default class UserList extends Component {
     return (
     <>
       {!this.state.pageLoading ?
-      <>
+      (<>
         {cookies.get('role') === 'ADMIN' ?
         <div className="list row" style={{marginLeft:"100px"}}>
           <div className="col-md-8">
@@ -368,9 +368,9 @@ export default class UserList extends Component {
         :
         <Navigate replace to="/notAuthenticated" />
         }
-      </>
+      </>)
       :
-        <div>
+        (<div>
             
         {this.state.networkError ?
           <p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>
@@ -380,7 +380,7 @@ export default class UserList extends Component {
             <p>Loading...</p>
           </>
         }
-      </div>
+      </div>)
       }
     </>
     );

@@ -185,7 +185,7 @@ export default class AddArtwork extends Component{
       return (
         <>
         {this.state.pageLoaded ? 
-          <>
+          (<>
           {cookies.get('role') === 'ADMIN' ?
             <div className="submit-form">
               {this.state.submitted ? (
@@ -307,18 +307,18 @@ export default class AddArtwork extends Component{
             :
               <Navigate replace to="/notAuthenticated" />
             }
-          </>
+          </>)
           :
-          <>
+          (<>
             {this.state.networkError ?
-              <p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>
+              (<p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>)
               :
-              <>
+              (<>
                   <LoadingComponent />
                   <p>Loading...</p>
-              </>
+              </>)
             }
-          </>
+          </>)
           }
           </>
         );

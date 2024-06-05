@@ -107,7 +107,7 @@ class LoginForm extends Component{
         return(
             <>
                 {!this.state.submitted ?
-                <>
+                (<>
                     {!cookies.get('role') ? 
                     <div className="submit-form">
                         {this.state.failure ? 
@@ -158,9 +158,9 @@ class LoginForm extends Component{
                     :
                         <Navigate replace to="/index" />
                     }
-                </>
+                </>)
                 :
-                <>
+                (<>
                     {!this.state.networkFailure ?
                         <>
                             <LoadingComponent />
@@ -169,7 +169,7 @@ class LoginForm extends Component{
                     :
                         <p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>
                     }
-                </>
+                </>)
                 }
             </>
         )
