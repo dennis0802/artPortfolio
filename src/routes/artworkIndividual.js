@@ -7,7 +7,7 @@ const ArtworkIndividual = () => {
         <div className="App">
             <div id="page">
                 <MainNavbar selected={{id:3}}/>
-                <br/>
+                <h1>Artpiece</h1>
                 <Artwork />
             </div>
         </div>

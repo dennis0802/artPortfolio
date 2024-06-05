@@ -3,6 +3,7 @@ import ArtworkService from "../service/artwork.service";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { Navigate } from "react-router-dom";
+import LoadingComponent from "./loading.component";
 
 const cookies = new Cookies();
 
@@ -27,6 +28,8 @@ export default class AddArtwork extends Component{
             month: 0,
             year: "",
             reflection: "",
+            networkError: false,
+            pageLoaded: false,
 
             submitted: false,
             count: 0,
@@ -43,7 +46,14 @@ export default class AddArtwork extends Component{
     getMaxCount(){
       ArtworkService.findMaxID().then(response => {
         this.setState({
-          count: response.data.max === null ? 0 : response.data.max
+          count: response.data.max === null ? 0 : response.data.max,
+          pageLoaded: true
+        })
+      })
+      .catch((e) => {
+        console.log(e);
+        this.setState({
+          networkError: true
         })
       })
     }
@@ -163,7 +173,7 @@ export default class AddArtwork extends Component{
           window.location = '/y5';
           break;
         case new Date().getFullYear:
-          window.location = '/artwork';
+          window.location = '/y6';
           break;
         default:
           window.location = '/';
@@ -174,126 +184,141 @@ export default class AddArtwork extends Component{
     render() {
       return (
         <>
-        {cookies.get('role') === 'ADMIN' ?
-          <div className="submit-form">
-            {this.state.submitted ? (
-              <>
-                <h4>You submitted successfully!</h4>
-                <button className="btn btn-success" onClick={this.newArtwork}>
-                  Add Another Artwork
-                </button>
-                <button
-                  className="btn btn-primary mt-2"
-                  onClick={this.returnToList}
-                >
-                  Go to {this.state.year} Art
-                </button>
-              </>
-            ) : (
-              
-              <>
-              {this.state.message ? 
-              <div style={{color: "red", outline: "1px dashed red"}}>
-                <p style={{fontWeight: "bold"}}>The submission was unsuccessful.</p>
-                <p>Ensure the following is satisfied for a successful submission:</p>
-                <ul>
-                  <li>A title is provided.</li>
-                  <li>An image has been uploaded.</li>
-                  <li>When uploading a file, the size is less than 50MB and is an image format (png, jpg, gif, etc.)</li>
-                  <li>A month is selected.</li>
-                  <li>A numerical year is input.</li>
-                </ul>
-              </div>
-              : 
-              ""}
-
-                <div className="form-group mt-2">
-                  <label htmlFor="title">Title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="title"
-                    required
-                    value={this.state.title}
-                    onChange={this.onChangeTitle}
-                    name="title"
-                  />
-                </div>
-
-                <div className="form-group mt-2">
-                  <label htmlFor="imagedata">Image</label>
-                  <p><b>(Ideally, the image size should be 1920x1080 or similar ratios)</b></p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="form-control"
-                    id="imagedata"
-                    required
-                    onChange={this.onChangeImage}
-                    name="imagedata"
-                  />
-                </div>
-
-                <div className="form-group mt-2">
-              <label htmlFor="month">Month</label>
-              <select 
-                className="form-control" 
-                id="month"
-                onChange={this.onChangeMonth}
-                required
-                defaultValue={0}
-              >
-                <option value="0" hidden>Select a month...</option>
-                <option value="1">January</option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
-
-              <div className="form-group mt-2">
-                  <label htmlFor="year">Year</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="year"
-                    required
-                    value={this.state.year}
-                    onChange={this.onChangeYear}
-                    name="year"
-                  />
-              </div>
-
-              <div className="form-group mt-2">
-              <label htmlFor="reflection">Reflection</label>
-              <textarea 
-                className="form-control"
-                id="reflection"
-                onChange={this.onChangeReflection}
-                rows="15"
-                value={this.state.reflection}
-              >
+        {this.state.pageLoaded ? 
+          <>
+          {cookies.get('role') === 'ADMIN' ?
+            <div className="submit-form">
+              {this.state.submitted ? (
+                <>
+                  <h4>You submitted successfully!</h4>
+                  <button className="btn btn-success" onClick={this.newArtwork}>
+                    Add Another Artwork
+                  </button>
+                  <button
+                    className="btn btn-primary mt-2"
+                    onClick={this.returnToList}
+                  >
+                    Go to {this.state.year} Art
+                  </button>
+                </>
+              ) : (
                 
-              </textarea>
+                <>
+                {this.state.message ? 
+                <div style={{color: "red", outline: "1px dashed red"}}>
+                  <p style={{fontWeight: "bold"}}>The submission was unsuccessful.</p>
+                  <p>Ensure the following is satisfied for a successful submission:</p>
+                  <ul>
+                    <li>A title is provided.</li>
+                    <li>An image has been uploaded.</li>
+                    <li>When uploading a file, the size is less than 50MB and is an image format (png, jpg, gif, etc.)</li>
+                    <li>A month is selected.</li>
+                    <li>A numerical year is input.</li>
+                  </ul>
+                </div>
+                : 
+                ""}
+
+                  <div className="form-group mt-2">
+                    <label htmlFor="title">Title</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="title"
+                      required
+                      value={this.state.title}
+                      onChange={this.onChangeTitle}
+                      name="title"
+                    />
+                  </div>
+
+                  <div className="form-group mt-2">
+                    <label htmlFor="imagedata">Image</label>
+                    <p><b>(Ideally, the image size should be 1920x1080 or similar ratios)</b></p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="form-control"
+                      id="imagedata"
+                      required
+                      onChange={this.onChangeImage}
+                      name="imagedata"
+                    />
+                  </div>
+
+                  <div className="form-group mt-2">
+                <label htmlFor="month">Month</label>
+                <select 
+                  className="form-control" 
+                  id="month"
+                  onChange={this.onChangeMonth}
+                  required
+                  defaultValue={0}
+                >
+                  <option value="0" hidden>Select a month...</option>
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+
+                <div className="form-group mt-2">
+                    <label htmlFor="year">Year</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="year"
+                      required
+                      value={this.state.year}
+                      onChange={this.onChangeYear}
+                      name="year"
+                    />
+                </div>
+
+                <div className="form-group mt-2">
+                <label htmlFor="reflection">Reflection</label>
+                <textarea 
+                  className="form-control"
+                  id="reflection"
+                  onChange={this.onChangeReflection}
+                  rows="15"
+                  value={this.state.reflection}
+                >
+                  
+                </textarea>
+              </div>
+                
+              </div>
+              <br/>
+                  <button onClick={this.saveArtwork} className="btn btn-success mb-3">
+                    Submit
+                  </button>
+                </>
+              )}
             </div>
-              
-            </div>
-            <br/>
-                <button onClick={this.saveArtwork} className="btn btn-success mb-3">
-                  Submit
-                </button>
-              </>
-            )}
-          </div>
+            :
+              <Navigate replace to="/notAuthenticated" />
+            }
+          </>
           :
-            <Navigate replace to="/notAuthenticated" />
+          <>
+            {this.state.networkError ?
+              <p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>
+              :
+              <>
+                  <LoadingComponent />
+                  <p>Loading...</p>
+              </>
+            }
+          </>
           }
           </>
         );

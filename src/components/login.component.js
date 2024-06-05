@@ -3,6 +3,7 @@ import { withRouter } from '../common/with-router';
 import UserDataService from '../service/user.service';
 import Cookies from "universal-cookie"
 import { Navigate } from 'react-router-dom';
+import LoadingComponent from './loading.component';
 
 const cookies = new Cookies();
 const date = new Date();
@@ -20,6 +21,7 @@ class LoginForm extends Component{
             username: "",
             password: "",
             failure: false,
+            networkFailure: false,
             currentUser: {
                 last_login: date
             }
@@ -39,6 +41,10 @@ class LoginForm extends Component{
     }
 
     submitForm(e){
+        this.setState({
+            submitted: true
+        })
+
         // Go to the form and find a user with the username
         UserDataService.getByUsername(this.state.username)
             .then(response => {
@@ -74,6 +80,7 @@ class LoginForm extends Component{
                             else{
                                 this.setState({
                                     failure: true,
+                                    submitted: false,
                                 })
                             }
                         })
@@ -81,7 +88,8 @@ class LoginForm extends Component{
             })
             .catch(e =>{
                 this.setState({
-                    failure: true
+                    submitted: true,
+                    networkFailure: true
                 })
                 console.log(e);
             })
@@ -98,55 +106,70 @@ class LoginForm extends Component{
     render(){
         return(
             <>
-                {!cookies.get('role') ? 
-                <div className="submit-form">
-                    {this.state.failure ? 
-                        <div style={{color: "red", outline: "1px dashed red"}}>
-                            <h5>ERROR</h5>
-                            <p>The username or password is incorrect.</p>
+                {!this.state.submitted ?
+                <>
+                    {!cookies.get('role') ? 
+                    <div className="submit-form">
+                        {this.state.failure ? 
+                            <div style={{color: "red", outline: "1px dashed red"}}>
+                                <h5>ERROR</h5>
+                                <p>The username or password is incorrect.</p>
+                            </div>
+                        :
+                            ""
+                        }
+
+                        <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="username"
+                            required
+                            value={this.state.username}
+                            onChange={this.onChangeUsername}
+                            name="username"
+                        />
                         </div>
+
+                        <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            type="password"
+                            className="form-control"
+                            id="password"
+                            required
+                            value={this.state.password}
+                            onChange={this.onChangePassword}
+                            name="password"
+                        />
+                        </div>
+
+                        <button onClick={this.submitForm} className="btn btn-success mt-3 mb-1">
+                        Login to Account
+                        </button><br/>
+                        <button onClick={this.goCreateAccount} className="btn btn-info mt-1 mb-1">
+                        Create an Account
+                        </button><br/>
+                        <button onClick={this.goRecoverPassword} className="btn btn-warning mt-1 mb-1">
+                        Forgot Your Password?
+                        </button><br/>
+                    </div>
                     :
-                        ""
+                        <Navigate replace to="/index" />
                     }
-
-                    <div className="form-group">
-                    <label htmlFor="username">Username</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="username"
-                        required
-                        value={this.state.username}
-                        onChange={this.onChangeUsername}
-                        name="username"
-                    />
-                    </div>
-
-                    <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        id="password"
-                        required
-                        value={this.state.password}
-                        onChange={this.onChangePassword}
-                        name="password"
-                    />
-                    </div>
-
-                    <button onClick={this.submitForm} className="btn btn-success mt-3 mb-1">
-                    Login to Account
-                    </button><br/>
-                    <button onClick={this.goCreateAccount} className="btn btn-info mt-1 mb-1">
-                    Create an Account
-                    </button><br/>
-                    <button onClick={this.goRecoverPassword} className="btn btn-warning mt-1 mb-1">
-                    Forgot Your Password?
-                    </button><br/>
-                </div>
+                </>
                 :
-                    <Navigate replace to="/index" />
+                <>
+                    {!this.state.networkFailure ?
+                        <>
+                            <LoadingComponent />
+                            <p>Logging in...</p>
+                        </>
+                    :
+                        <p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>
+                    }
+                </>
                 }
             </>
         )

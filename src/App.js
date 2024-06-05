@@ -21,20 +21,20 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/index" element={<Home />} />
             <Route path="/about" element={<About />} />
-            <Route path="/artwork" element={<ArtYear yearStart={new Date().getFullYear()}/>}/>
             <Route path="/artwork/:id" element={<Artwork />}/>
             <Route path="/addArtwork" element={<NewArtwork />}/>
-            <Route path="/y1" element={<ArtYear yearStart={2019}/>}/>
-            <Route path="/y2" element={<ArtYear yearStart={2020}/>}/>
-            <Route path="/y3" element={<ArtYear yearStart={2021}/>}/>
-            <Route path="/y4" element={<ArtYear yearStart={2022}/>}/>
-            <Route path="/y5" element={<ArtYear yearStart={2023}/>}/>
+            <Route path="/y1" element={<ArtYear yearStart={2019} subId={1}/>}/>
+            <Route path="/y2" element={<ArtYear yearStart={2020} subId={2}/>}/>
+            <Route path="/y3" element={<ArtYear yearStart={2021} subId={3}/>}/>
+            <Route path="/y4" element={<ArtYear yearStart={2022} subId={4}/>}/>
+            <Route path="/y5" element={<ArtYear yearStart={2023} subId={5}/>}/>
+            <Route path="/y6" element={<ArtYear yearStart={new Date().getFullYear()} subId={6}/>}/>
             <Route path="/login" element={<LoginPage />}/> 
-            <Route path="/logout" element={<LogoutPage />}/>
+            <Route path="/logout" element={<LogoutPage subId={2}/>}/>
             <Route path="/createAccount" element={<CreateAccount />}/>
             <Route path="/notAuthenticated" element={<NotAuthenticated />}/>
             <Route path="/recoverPassword" element={<RecoveryPage />}/>
-            <Route path="/account" element={<AccountPage />}/>
+            <Route path="/account" element={<AccountPage subId={1}/>}/>
             <Route path="/users" element={<Users />}/>
         </Routes>
     </Router>

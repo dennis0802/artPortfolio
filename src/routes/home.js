@@ -51,7 +51,7 @@ const Home = () => {
                             <li><a href="/y3">Year 3 (2021)</a></li>
                             <li><a href="/y4">Year 4 (2022)</a></li>
                             <li><a href="/y5">Year 5 (2023)</a></li>
-                            <li><a href="/artwork">Current Year</a></li>
+                            <li><a href="/y6">Current (2024)</a></li>
                         </ul>
                     </li>
                     {cookies.get('user') ?
