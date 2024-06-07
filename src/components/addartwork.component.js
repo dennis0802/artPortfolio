@@ -228,6 +228,7 @@ export default class AddArtwork extends Component{
                       required
                       value={this.state.title}
                       onChange={this.onChangeTitle}
+                      onPaste={(e) => {e.preventDefault()}}
                       name="title"
                     />
                   </div>
@@ -279,6 +280,7 @@ export default class AddArtwork extends Component{
                       required
                       value={this.state.year}
                       onChange={this.onChangeYear}
+                      onPaste={(e) => {e.preventDefault()}}
                       name="year"
                     />
                 </div>

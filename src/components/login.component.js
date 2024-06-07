@@ -21,7 +21,6 @@ class LoginForm extends Component{
             username: "",
             password: "",
             failure: false,
-            networkFailure: false,
             currentUser: {
                 last_login: date
             }
@@ -48,7 +47,6 @@ class LoginForm extends Component{
         // Go to the form and find a user with the username
         UserDataService.getByUsername(this.state.username)
             .then(response => {
-                console.log(response.data);
                 if(response.data.length === 0){
                     this.setState({
                         failure: true,
@@ -56,23 +54,22 @@ class LoginForm extends Component{
                 }
                 else{
                     // Verify details match
-                    UserDataService.verifyPassword(this.state.password, response.data[0].password)
+                    UserDataService.verifyPassword(this.state.password, response.data.password)
                         .then(res => {
                             const success = res.data
                             
                             if(success){
                                 this.setState({
                                     failure: false,
-                                    currentUser: response.data[0]
+                                    currentUser: response.data
                                 })
-                                console.log(response.data[0]);
-                                cookies.set("user", response.data[0].username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
-                                cookies.set("role", response.data[0].role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+                                cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+                                cookies.set("role", response.data.role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
 
                                 // Change last login
                                 UserDataService.updateLogin(this.state.username, this.state.currentUser)
                                 .then(res =>{
-                                    console.log(res);
+                                    //console.log(res);
                                 })
 
                                 this.props.router.navigate("/");
@@ -88,8 +85,8 @@ class LoginForm extends Component{
             })
             .catch(e =>{
                 this.setState({
-                    submitted: true,
-                    networkFailure: true
+                    failure: true,
+                    submitted: false,
                 })
                 console.log(e);
             })
@@ -128,6 +125,7 @@ class LoginForm extends Component{
                             required
                             value={this.state.username}
                             onChange={this.onChangeUsername}
+                            onPaste={(e) => {e.preventDefault()}}
                             name="username"
                         />
                         </div>
@@ -141,6 +139,7 @@ class LoginForm extends Component{
                             required
                             value={this.state.password}
                             onChange={this.onChangePassword}
+                            onPaste={(e) => {e.preventDefault()}}
                             name="password"
                         />
                         </div>

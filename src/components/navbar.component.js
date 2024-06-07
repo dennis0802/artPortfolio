@@ -13,7 +13,7 @@ function MainNavbar({selected}) {
               <Container>
                 <Navbar.Brand href="/index" >            
                   <img
-                    src="./img/logo.png"
+                    src="../img/logo.png"
                     width="30"
                     height="30"
                     className="d-inline-block align-top"

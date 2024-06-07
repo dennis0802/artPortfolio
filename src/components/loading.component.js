@@ -2,7 +2,6 @@ import { Component } from 'react';
 import { withRouter } from '../common/with-router';
 import { Spinner } from 'react-bootstrap';
 
-
 class Loading extends Component{
 
     render(){

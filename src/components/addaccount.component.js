@@ -152,6 +152,7 @@ class AccountForm extends Component{
             });
             console.log(response.data);
 
+            // TODO: EDIT: Replace this with emailing a registration verification email
             // Set user as logged in
             cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
             cookies.set("role", response.data.role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
@@ -186,7 +187,7 @@ class AccountForm extends Component{
                                 <li>Usernames should be composed of only alphabetical and numerical characters.</li>
                                 <li>Refer to the listed password requirements below and ensure confirmation matches.</li>
                                 <li>Submit a valid email.</li>
-                                <li>Ensure your connection is stable - if you're certain your information is valid, refresh the page.</li>
+                                <li>Ensure your connection is stable - if you're certain your information is valid, try refreshing the page.</li>
                                 {this.state.uniqueFailure ? <li>The submitted email or username has already been used. Please submit a different one.</li>: ""}
                             </ul>
                         </div>
@@ -208,6 +209,7 @@ class AccountForm extends Component{
                             required
                             value={this.state.username}
                             onChange={this.onChangeUsername}
+                            onPaste={(e) => {e.preventDefault()}}
                             name="username"
                         />
                         </div>
@@ -217,8 +219,8 @@ class AccountForm extends Component{
                         <div style={{fontWeight: "bold"}}>
                         <p>Your password must:</p>
                             <ul>
-                                <li>Have 1 uppercase letter and 1 lowercase letter.</li>
-                                <li>Have 1 numerical character and 1 special character.</li>
+                                <li>Have at least 1 uppercase letter and at least 1 lowercase letter.</li>
+                                <li>Have at least 1 numerical character and at least 1 special character.</li>
                                 <li>Be at least 8 characters long.</li>
                             </ul>
                         </div>
@@ -229,6 +231,7 @@ class AccountForm extends Component{
                             required
                             value={this.state.password}
                             onChange={this.onChangePassword}
+                            onPaste={(e) => {e.preventDefault()}}
                             name="password"
                         />
                         </div>
@@ -242,6 +245,7 @@ class AccountForm extends Component{
                             required
                             value={this.state.passwordConfirm}
                             onChange={this.onChangePasswordConfirm}
+                            onPaste={(e) => {e.preventDefault()}}
                             name="passwordConfirm"
                         />
 
@@ -266,6 +270,7 @@ class AccountForm extends Component{
                             required
                             value={this.state.email}
                             onChange={this.onChangeEmail}
+                            onPaste={(e) => {e.preventDefault()}}
                             name="email"
                         />
                         </div>
@@ -282,10 +287,10 @@ class AccountForm extends Component{
                         {this.state.networkError ?
                             (<p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>)
                         :
-                        <>
-                            (<LoadingComponent />
-                            <p>{this.state.initialLoad ? "Creating your account..." : "Loading..." }</p>)
-                        </>
+                        (<>
+                            <LoadingComponent />
+                            <p>{this.state.initialLoad ? "Creating your account..." : "Loading..." }</p>
+                        </>)
                         }
                     </>)
                     }

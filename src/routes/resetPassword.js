@@ -1,17 +1,17 @@
 import React from "react";
 import MainNavbar from "../components/navbar.component";
-import RecoveryForm from "../components/recover.component";
+import ResetForm from "../components/reset.component";
 
-const RecoveryPage = () => {
+const ResetPage = () => {
     return (
         <div className="App">
             <div id="page">
                 <MainNavbar selected={{id:4}}/>
                 <h1 style={{marginTop: "20px"}}>Password Recovery</h1>
-                <RecoveryForm />
+                <ResetForm />
             </div>
         </div>
     );
 };
  
-export default RecoveryPage;
+export default ResetPage;

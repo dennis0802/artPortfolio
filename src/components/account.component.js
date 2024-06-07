@@ -49,9 +49,9 @@ class Account extends Component{
         UserDataService.getByUsername(username)
           .then(response => {
             this.setState({
-              currentUser: response.data[0],
-              oldUsername: response.data[0].username,
-              oldEmail: response.data[0].email
+              currentUser: response.data,
+              oldUsername: response.data.username,
+              oldEmail: response.data.email
             });
     
           })
@@ -127,7 +127,7 @@ class Account extends Component{
         // Check for uniqueness (and ensure it isn't flagging errors on itself)
         UserDataService.getByUsername(this.state.currentUser.username)
         .then(response => {
-            if(response.data.length !== 0 && response.data[0].username !== this.state.oldUsername){
+            if(response.data.length !== 0 && response.data.username !== this.state.oldUsername){
                 this.setState({
                     failure: true,
                     uniqueFailure: true
@@ -143,7 +143,7 @@ class Account extends Component{
 
         UserDataService.getByEmail(this.state.currentUser.email)
         .then(response => {
-            if(response.data.length !== 0 && response.data[0].email !== this.state.oldEmail){
+            if(response.data.length !== 0 && response.data.email !== this.state.oldEmail){
                 this.setState({
                     failure: true,
                     uniqueFailure: true
@@ -189,7 +189,7 @@ class Account extends Component{
                 console.log(response);
                 // If username has changed, login session changes accordingly.
                 if(this.state.oldUsername !== this.state.currentUser.username){
-                    cookies.set("user", response.data[0].username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+                    cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
                 }
 
                 this.setState({
@@ -301,6 +301,7 @@ class Account extends Component{
                     value={currentUser.username}
                     onChange={this.onChangeUsername}
                     disabled={cookies.get('user') === 'rootUser'}
+                    onPaste={(e) => {e.preventDefault()}}
                   />
                 </div>
 
@@ -321,6 +322,7 @@ class Account extends Component{
                     id="password"
                     value={this.state.password}
                     onChange={this.onChangePassword}
+                    onPaste={(e) => {e.preventDefault()}}
                   />
                 </div>
 
@@ -332,6 +334,7 @@ class Account extends Component{
                     id="passwordConfirm"
                     value={this.state.passwordConfirm}
                     onChange={this.onChangePasswordConfirm}
+                    onPaste={(e) => {e.preventDefault()}}
                   />
                     {
                         this.state.password && this.state.passwordConfirm ? 
@@ -352,6 +355,7 @@ class Account extends Component{
                     id="email"
                     value={currentUser.email}
                     onChange={this.onChangeEmail}
+                    onPaste={(e) => {e.preventDefault()}}
                   />
                 </div>
                 

@@ -13,6 +13,8 @@ import NotAuthenticated from './routes/notAuthenticated';
 import AccountPage from './routes/account';
 import Users from './routes/users';
 import RecoveryPage from './routes/recoverPassword';
+import ErrorPage from './routes/error';
+import ResetPage from './routes/resetPassword';
 
 function App() {
   return(
@@ -30,12 +32,14 @@ function App() {
             <Route path="/y5" element={<ArtYear yearStart={2023} subId={5}/>}/>
             <Route path="/y6" element={<ArtYear yearStart={new Date().getFullYear()} subId={6}/>}/>
             <Route path="/login" element={<LoginPage />}/> 
+            <Route path="/account" element={<AccountPage subId={1}/>}/>
             <Route path="/logout" element={<LogoutPage subId={2}/>}/>
             <Route path="/createAccount" element={<CreateAccount />}/>
             <Route path="/notAuthenticated" element={<NotAuthenticated />}/>
             <Route path="/recoverPassword" element={<RecoveryPage />}/>
-            <Route path="/account" element={<AccountPage subId={1}/>}/>
             <Route path="/users" element={<Users />}/>
+            <Route path="/reset/:token" element={<ResetPage />}/>
+            <Route path="*" element={<ErrorPage/>}/>
         </Routes>
     </Router>
   )
