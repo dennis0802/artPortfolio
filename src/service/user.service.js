@@ -2,7 +2,6 @@ import http from "../http-common";
 
 class UserDataService {
     create(data) {
-        console.log(data);
         return http.post("/users", data);
     }
 
@@ -13,6 +12,8 @@ class UserDataService {
     getByUsername(username) {
         return http.get(`/users/username/${username}`);
     }
+
+    
 
     getAllUnpaged(query) {
         return http.get(`/users/unpaged/${query}`);

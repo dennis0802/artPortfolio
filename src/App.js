@@ -15,6 +15,7 @@ import Users from './routes/users';
 import RecoveryPage from './routes/recoverPassword';
 import ErrorPage from './routes/error';
 import ResetPage from './routes/resetPassword';
+import RegistrationPage from './routes/completeRegistration';
 
 function App() {
   return(
@@ -39,6 +40,7 @@ function App() {
             <Route path="/recoverPassword" element={<RecoveryPage />}/>
             <Route path="/users" element={<Users />}/>
             <Route path="/reset/:token" element={<ResetPage />}/>
+            <Route path="/confirmAccount/:token" element={<RegistrationPage />}/>
             <Route path="*" element={<ErrorPage/>}/>
         </Routes>
     </Router>

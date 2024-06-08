@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { withRouter } from '../common/with-router';
 import UserDataService from '../service/user.service';
+import StatusDataService from '../service/status.service';
 import Cookies from "universal-cookie"
 import { Navigate } from 'react-router-dom';
 import LoadingComponent from './loading.component';
@@ -21,6 +22,7 @@ class LoginForm extends Component{
             username: "",
             password: "",
             failure: false,
+            activationFailure: false,
             currentUser: {
                 last_login: date
             }
@@ -53,31 +55,45 @@ class LoginForm extends Component{
                     })
                 }
                 else{
-                    // Verify details match
-                    UserDataService.verifyPassword(this.state.password, response.data.password)
-                        .then(res => {
-                            const success = res.data
-                            
-                            if(success){
-                                this.setState({
-                                    failure: false,
-                                    currentUser: response.data
-                                })
-                                cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
-                                cookies.set("role", response.data.role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+                    // Verify user is activated
+                    StatusDataService.get(response.data.user_id)
+                        .then(verifyRes => {
+                            console.log(verifyRes);
+                            if(verifyRes.data.isactive){
+                                // Verify details match
+                                UserDataService.verifyPassword(this.state.password, response.data.password)
+                                    .then(res => {
+                                        const success = res.data
+                                        
+                                        if(success){
+                                            this.setState({
+                                                failure: false,
+                                                currentUser: response.data
+                                            })
+                                            cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+                                            cookies.set("role", response.data.role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
 
-                                // Change last login
-                                UserDataService.updateLogin(this.state.username, this.state.currentUser)
-                                .then(res =>{
-                                    //console.log(res);
-                                })
+                                            // Change last login
+                                            UserDataService.updateLogin(this.state.username, this.state.currentUser)
+                                            .then(res =>{
+                                                //console.log(res);
+                                            })
 
-                                this.props.router.navigate("/");
+                                            this.props.router.navigate("/");
+                                        }
+                                        else{
+                                            this.setState({
+                                                failure: true,
+                                                submitted: false,
+                                            })
+                                        }
+                                    })
                             }
                             else{
                                 this.setState({
                                     failure: true,
                                     submitted: false,
+                                    activationFailure: true
                                 })
                             }
                         })
@@ -109,8 +125,8 @@ class LoginForm extends Component{
                     <div className="submit-form">
                         {this.state.failure ? 
                             <div style={{color: "red", outline: "1px dashed red"}}>
-                                <h5>ERROR</h5>
-                                <p>The username or password is incorrect.</p>
+                                <h5>LOGIN FAILED</h5>
+                                {this.state.activationFailure ? <p>The account is not active.</p> : <p>The username or password is incorrect.</p>}
                             </div>
                         :
                             ""

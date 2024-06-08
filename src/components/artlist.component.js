@@ -197,7 +197,8 @@ export default class ArtList extends Component {
       this.setState({
         inputSearch: "",
         currentIndex: -1,
-        currentArtwork: null
+        currentArtwork: null,
+        page: 1
       })
     }
     else{
@@ -206,7 +207,7 @@ export default class ArtList extends Component {
         pageChangeLoading: true
       })
 
-      ArtworkDataService.getAllPaged(year, this.state.page, this.state.pageSize, this.state.searchTitle)
+      ArtworkDataService.getAllPaged(year, 1, this.state.pageSize, this.state.searchTitle)
       .then(response => {
         this.setState({
           artworks: response.data,

@@ -16,10 +16,17 @@ const Home = () => {
                 <h2>Latest Pieces</h2>
                 <Carousel className="mb-3" style={{backgroundColor: "gray"}}>
                     <Carousel.Item >
+                        <Image src="./img/Madison.png" width={480} height={255} alt="Latest pieces" rounded/>
+                        <Carousel.Caption>
+                            <h4>Madison the Sage</h4>
+                            <p>May 2024</p>
+                        </Carousel.Caption>
+                    </Carousel.Item>
+                    <Carousel.Item >
                         <Image src="./img/Resonance of Rats.png" width={480} height={255} alt="Latest pieces" rounded/>
                         <Carousel.Caption>
                             <h4>Resonance of Rats</h4>
-                            <p>May 2024</p>
+                            <p>April 2024</p>
                         </Carousel.Caption>
                     </Carousel.Item>
                     <Carousel.Item>

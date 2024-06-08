@@ -4,6 +4,8 @@ import Cookies from "universal-cookie"
 import { Navigate } from 'react-router-dom';
 import { Button, Modal } from 'react-bootstrap';
 import UserDataService from '../service/user.service';
+import TokenDataService from '../service/token.service';
+import StatusDataService from '../service/status.service';
 
 const cookies = new Cookies();
 
@@ -213,17 +215,29 @@ class Account extends Component{
     }
 
     deleteAccount(){
-        UserDataService.delete(this.state.currentUser.username)
-        .then(response => {
-          console.log(response.data);
-          
-          const currentUser = cookies.get('user');
-          const role = cookies.get('role');
-          cookies.remove("user", currentUser, {path: "/", maxAge: 43200, sameSite: "strict", secure: true});
-          cookies.remove("role", role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true});
-
-          this.closeDeletePrompt();
-          this.propts.router.navigate("/")
+        TokenDataService.delete(this.state.currentUser.user_id)
+        .then(resp => {
+          StatusDataService.delete(this.state.currentUser.user_id)
+          .then(statusResp => {
+            UserDataService.delete(this.state.currentUser.username)
+            .then(response => {
+              console.log(response.data);
+              
+              const currentUser = cookies.get('user');
+              const role = cookies.get('role');
+              cookies.remove("user", currentUser, {path: "/", maxAge: 43200, sameSite: "strict", secure: true});
+              cookies.remove("role", role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true});
+    
+              this.closeDeletePrompt();
+              this.propts.router.navigate("/")
+            })
+            .catch(e => {
+              console.log(e);
+            });
+          })
+          .catch(e => {
+            console.log(e);
+          });
         })
         .catch(e => {
           console.log(e);

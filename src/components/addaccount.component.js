@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import { withRouter } from '../common/with-router';
 import UserDataService from '../service/user.service';
+import StatusDataService from '../service/status.service';
+import TokenDataService from '../service/token.service';
 import Cookies from "universal-cookie";
 import { Navigate } from 'react-router-dom';
 import LoadingComponent from './loading.component';
@@ -31,8 +33,10 @@ class AccountForm extends Component{
             uniqueFailure: false,
             networkError: false,
             count: 0,
+            statusCount: 0,
             
             submitted: true,
+            accountCreated: true,
             initialLoad: false
         }
     }
@@ -46,6 +50,19 @@ class AccountForm extends Component{
         UserDataService.findMaxID().then(response => {
             this.setState({
                 count: response.data.max === null ? 0 : response.data.max,
+            })
+        })
+        .catch((e) => {
+            console.log(e);
+            this.setState({
+                submitted: true,
+                networkError: true
+            })
+        })
+
+        StatusDataService.getMaxID().then(response => {
+            this.setState({
+                statusCount: response.data.max === null ? 0 : response.data.max,
                 submitted: false,
                 initialLoad: true
             })
@@ -152,11 +169,43 @@ class AccountForm extends Component{
             });
             console.log(response.data);
 
-            // TODO: EDIT: Replace this with emailing a registration verification email
-            // Set user as logged in
-            cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
-            cookies.set("role", response.data.role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
-            this.props.router.navigate("/");
+            var status = {
+                id: this.state.statusCount + 1,
+                user_id: response.data.user_id,
+                isactive: false,
+            }
+            StatusDataService.create(status)
+            .then(createdResp => {
+                this.setState({
+                    accountCreated: true
+                })
+                
+                StatusDataService.get(response.data.user_id)
+                .then(tokenResp => {
+                    console.log(tokenResp);
+                    TokenDataService.sendRegistrationEmail(response.data.username, response.data.email, tokenResp.data.code, tokenResp.data.token)
+                    .then(sent => {
+
+                    })
+                    .catch(e => {
+                        window.scrollTo(0, 0)
+                        this.setState({
+                            failure: true,
+                            uniqueFailure: false,
+                            submitted: false
+                        })
+                    })
+                })
+            })
+            .catch(e => {
+                window.scrollTo(0, 0)
+                this.setState({
+                    failure: true,
+                    uniqueFailure: false,
+                    submitted: false
+                })
+            });
+
         })
         .catch(e => {
             window.scrollTo(0, 0)
@@ -288,8 +337,19 @@ class AccountForm extends Component{
                             (<p>There has been a network error connecting to the server. Please refresh or try again later. If the issue persists, please contact the administrator.</p>)
                         :
                         (<>
-                            <LoadingComponent />
-                            <p>{this.state.initialLoad ? "Creating your account..." : "Loading..." }</p>
+                            {!this.state.initialLoad || !this.state.accountCreated ? <LoadingComponent /> : "" }
+                            <p>
+                                {this.state.initialLoad ? 
+                                    (this.state.accountCreated ?
+                                        ("Submitted! Please check your email for further instructions to complete your registration!")
+                                        :
+                                        ("Creating your account..."))
+                               : 
+                                ("Loading...") }
+                            </p>
+                            <button onClick={this.returnToLogin} className="btn btn-success mt-1 mb-1">
+                            Return to Login
+                            </button><br/>
                         </>)
                         }
                     </>)
