@@ -98,6 +98,7 @@ export default class AddArtwork extends Component{
     
     // Save artwork
     saveArtwork() {
+      console.log(this.state.year);
       var data = {
           id: this.state.count + 1,
           imagedata: this.state.imagename,
@@ -172,7 +173,7 @@ export default class AddArtwork extends Component{
         case 2023:
           window.location = '/y5';
           break;
-        case new Date().getFullYear:
+        case 2024:
           window.location = '/y6';
           break;
         default:

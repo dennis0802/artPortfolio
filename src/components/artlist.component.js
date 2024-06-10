@@ -5,6 +5,7 @@ import '../styles.css';
 import { Button, Figure, Image, Modal, Pagination} from "react-bootstrap";
 import Cookies from "universal-cookie";
 import LoadingComponent from "./loading.component";
+import FeedbackForm from "./feedback.component";
 
 const cookies = new Cookies();
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -40,7 +41,8 @@ export default class ArtList extends Component {
       page: 1,
       pageSize: 5,
       fullCount: 0,
-      pageCount: 1
+      pageCount: 1,
+      average: 0
     };
 
     this.pageSizes = [5, 10, 15];
@@ -118,7 +120,7 @@ export default class ArtList extends Component {
     window.location="/addArtwork"
   }
 
-  // Refresh lsit
+  // Refresh list
   refreshList() {
     this.retrieveArtworksPaged();
     this.setState({
@@ -322,7 +324,7 @@ export default class ArtList extends Component {
 
             {this.state.message ? <div style={{color:"green", outline: "1px green dashed"}}><p>All {year} artworks successfully deleted!</p></div>: <Fragment></Fragment>}
             <p>If you are unable to find a specific piece, please check another art year or try searching for its title.</p>
-            <p>Try clicking a selected artwork's image to enlarge it!</p>
+            <p>Try clicking a selected artwork's image to enlarge it to view more details and feedback!</p>
             {!this.state.pageChangeLoading ?
             <>
               {cookies.get('role') === 'ADMIN' ? 
@@ -402,8 +404,15 @@ export default class ArtList extends Component {
                     <div className="mt-3">
                       {currentArtwork.reflection}
                     </div>
-                    <div className="mt-3">
+                    <div className="mt-3 mb-3">
                       <b>Created:</b> {months[currentArtwork.month-1]} {currentArtwork.year}
+                    </div>
+
+                    <h4>Feedback:</h4>
+                    <div className="mt-3">
+                        <div className="mt-3">
+                          <FeedbackForm currentArtwork={currentArtwork}/>
+                        </div>
                     </div>
                   </Modal.Body>
                   <Modal.Footer>

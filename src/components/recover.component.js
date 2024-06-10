@@ -66,42 +66,7 @@ class RecoveryForm extends Component{
 
             // Check the user exists
             if(response1.data !== ""){
-                TokenDataService.findByUser(response1.data.user_id)
-                .then(response2 => {
-
-                    // User already has a token - delete it
-                    if(response2.data !== ""){
-                        TokenDataService.delete(response1.data.user_id)
-                        .then(response3 => {
-                            TokenDataService.createResetToken(response1.data.user_id, this.state.count-1)
-                            .then(response4 => {
-                                this.sendEmail(response1.data.user_id, response1.data.username, response1.data.email)
-                            })
-                            .catch(e => {
-                                this.setState({
-                                    networkError: true
-                                })
-                            })
-                        })
-                        .catch(e => {
-                            this.setState({
-                                networkError: true
-                            })
-                        })
-                    }
-                    // User does not have a token
-                    else{
-                        TokenDataService.createResetToken(response1.data.user_id, this.state.count)
-                        .then(response5 => {
-                            this.sendEmail(response1.data.user_id, response1.data.username, response1.data.email)
-                        })
-                        .catch(e => {
-                            this.setState({
-                                networkError: true
-                            })
-                        })
-                    }
-                })
+                this.findUserToken(response1);
             }
         })
         .catch(e =>{
@@ -109,6 +74,45 @@ class RecoveryForm extends Component{
                 failure: true
             })
             console.log(e);
+        })
+    }
+
+    findUserToken(response){
+        TokenDataService.findByUser(response.data.user_id)
+        .then(response2 => {
+
+            // User already has a token - delete it
+            if(response2.data !== ""){
+                this.deleteExistingToken(response)
+            }
+            // User does not have a token
+            else{
+                this.createResetToken(response, this.state.count);
+            }
+        })
+    }
+
+    deleteExistingToken(response){
+        TokenDataService.delete(response.data.user_id)
+        .then(deleted => {
+            this.createResetToken(response, this.state.count - 1);
+        })
+        .catch(e => {
+            this.setState({
+                networkError: true
+            })
+        })
+    }
+
+    createResetToken(response, count){
+        TokenDataService.createResetToken(response.data.user_id, count)
+        .then(created => {
+            this.sendEmail(response.data.user_id, response.data.username, response.data.email)
+        })
+        .catch(e => {
+            this.setState({
+                networkError: true
+            })
         })
     }
 

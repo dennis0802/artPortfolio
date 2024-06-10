@@ -19,6 +19,8 @@ class ResetForm extends Component {
         this.onChangePasswordConfirm = this.onChangePasswordConfirm.bind(this);
         this.submitNewPassword = this.submitNewPassword.bind(this);
         this.deleteToken = this.deleteToken.bind(this);
+        this.getUserFromToken = this.getUserFromToken.bind(this);
+        this.updatePassword = this.updatePassword.bind(this);
 
         this.state = {
             initialLoad: false,
@@ -124,43 +126,50 @@ class ResetForm extends Component {
     }
 
     submitNewPassword(){
-        //$2b$10$WB3bJtTQ5O6.Eoq8rhmY..5Yi/Vb4xMGrgwaHHXjYbeQSCEjwrDH6 = openSesame123! (restore in db if this goes wrong)
         TokenDataService.findByToken(this.props.router.params.token)
         .then(response => {
-            UserDataService.get(response.data.user_id)
-            .then(userResponse => {
-                
-                var user = {
-                    user_id: userResponse.data.user_id,
-                    username: userResponse.data.username,
-                    password: this.state.password,
-                    passwordConfirm: this.state.passwordConfirm,
-                    email: userResponse.data.email,
-                    role: userResponse.data.role,
-                    created_at: userResponse.data.created_at,
-                    last_login: userResponse.data.last_login
-                }
+            this.getUserFromToken(response);
+        })
+        .catch(e => {
+            console.log(e);
+            this.setState({
+                passwordError: true
+            })
+        })
+    }
 
-                UserDataService.update(userResponse.data.username, user)
-                .then(updateResponse => {
-                    this.setState({
-                        passwordSubmitted: true
-                    })
-                    this.deleteToken(this.props.router.params.token);
-                })
-                .catch(e => {
-                    console.log(e);
-                    this.setState({
-                        passwordError: true
-                    })
-                })
+    getUserFromToken(response){
+        UserDataService.get(response.data.user_id)
+        .then(userResponse => {
+            
+            var user = {
+                user_id: userResponse.data.user_id,
+                username: userResponse.data.username,
+                password: this.state.password,
+                passwordConfirm: this.state.passwordConfirm,
+                email: userResponse.data.email,
+                role: userResponse.data.role,
+                created_at: userResponse.data.created_at,
+                last_login: userResponse.data.last_login
+            }
+
+            this.updatePassword(userResponse, user);
+        })
+        .catch(e => {
+            console.log(e);
+            this.setState({
+                passwordError: true
             })
-            .catch(e => {
-                console.log(e);
-                this.setState({
-                    passwordError: true
-                })
+        })
+    }
+
+    updatePassword(userResponse, user){
+        UserDataService.update(userResponse.data.username, user)
+        .then(updateResponse => {
+            this.setState({
+                passwordSubmitted: true
             })
+            this.deleteToken(this.props.router.params.token);
         })
         .catch(e => {
             console.log(e);

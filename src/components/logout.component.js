@@ -24,7 +24,7 @@ class LogoutForm extends Component{
             <>
             {cookies.get('role') ? 
                 <div className="submit-form">
-                    <button onClick={this.logout} className="btn btn-danger mt-1 mb-1">
+                    <button onClick={this.logout} className="btn btn-danger mt-3 mb-1">
                     Logout
                     </button><br/>
                 </div>

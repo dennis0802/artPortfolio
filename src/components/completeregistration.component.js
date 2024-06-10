@@ -18,6 +18,9 @@ class RegistrationForm extends Component {
         this.submitCode = this.submitCode.bind(this);
         this.updateToken = this.updateToken.bind(this);
         this.generateNewToken = this.generateNewToken.bind(this);
+        this.setNewToken = this.setNewToken.bind(this);
+        this.findUserFromStatus = this.findUserFromStatus.bind(this);
+        this.sendNewEmail = this.sendNewEmail.bind(this);
 
         this.state = {
             initialLoad: false,
@@ -84,29 +87,41 @@ class RegistrationForm extends Component {
                 tokenexpiry: response.data.tokenexpiry
             }
 
-            StatusDataService.updateWithNewToken(response.data.user_id, newToken)
-            .then(updateResponse => {
-                StatusDataService.findByUser(response.data.user_id)
-                .then(resp => {
-                    UserDataService.get(response.data.user_id)
-                    .then(userResp => {
-                        TokenDataService.sendRegistrationEmail(userResp.data.username, userResp.data.email, resp.data.code, resp.data.token);
-                        this.props.router.navigate("/");
-                    })
-                    .catch(e4 => {
-                        console.log(e4);
-                    })
-                })
-                .catch(e3 => {
-                    console.log(e3);
-                })
-            })
-            .catch(e2 => {
-                console.log(e2);
-            })
+            this.setNewToken(response, newToken)
         })
         .catch(e => {
             console.log(e);
+        })
+    }
+
+    setNewToken(response, newToken){
+        StatusDataService.updateWithNewToken(response.data.user_id, newToken)
+        .then(updateResponse => {
+            this.findUserFromStatus(response);
+        })
+        .catch(e2 => {
+            console.log(e2);
+        })
+    }
+
+    findUserFromStatus(response){
+        StatusDataService.findByUser(response.data.user_id)
+        .then(resp => {
+            this.sendNewEmail(response, resp);
+        })
+        .catch(e3 => {
+            console.log(e3);
+        })
+    }
+
+    sendNewEmail(response, statusResponse){
+        UserDataService.get(response.data.user_id)
+        .then(userResp => {
+            TokenDataService.sendRegistrationEmail(userResp.data.username, userResp.data.email, statusResponse.data.code, statusResponse.data.token);
+            this.props.router.navigate("/");
+        })
+        .catch(e4 => {
+            console.log(e4);
         })
     }
 

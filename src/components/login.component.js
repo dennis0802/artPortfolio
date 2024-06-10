@@ -17,6 +17,8 @@ class LoginForm extends Component{
         this.submitForm = this.submitForm.bind(this);
         this.goRecoverPassword = this.goRecoverPassword.bind(this);
         this.goCreateAccount = this.goCreateAccount.bind(this);
+        this.verifyActivation = this.verifyActivation.bind(this);
+        this.verifyPassword = this.verifyPassword.bind(this);
 
         this.state = {
             username: "",
@@ -55,48 +57,7 @@ class LoginForm extends Component{
                     })
                 }
                 else{
-                    // Verify user is activated
-                    StatusDataService.get(response.data.user_id)
-                        .then(verifyRes => {
-                            console.log(verifyRes);
-                            if(verifyRes.data.isactive){
-                                // Verify details match
-                                UserDataService.verifyPassword(this.state.password, response.data.password)
-                                    .then(res => {
-                                        const success = res.data
-                                        
-                                        if(success){
-                                            this.setState({
-                                                failure: false,
-                                                currentUser: response.data
-                                            })
-                                            cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
-                                            cookies.set("role", response.data.role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
-
-                                            // Change last login
-                                            UserDataService.updateLogin(this.state.username, this.state.currentUser)
-                                            .then(res =>{
-                                                //console.log(res);
-                                            })
-
-                                            this.props.router.navigate("/");
-                                        }
-                                        else{
-                                            this.setState({
-                                                failure: true,
-                                                submitted: false,
-                                            })
-                                        }
-                                    })
-                            }
-                            else{
-                                this.setState({
-                                    failure: true,
-                                    submitted: false,
-                                    activationFailure: true
-                                })
-                            }
-                        })
+                    this.verifyActivation(response);
                 }
             })
             .catch(e =>{
@@ -106,6 +67,59 @@ class LoginForm extends Component{
                 })
                 console.log(e);
             })
+    }
+
+    verifyActivation(response){
+        // Verify user is activated
+        StatusDataService.get(response.data.user_id)
+        .then(verifyRes => {
+            console.log(verifyRes);
+
+            // Verify details match
+            if(verifyRes.data.isactive){
+                this.verifyPassword(response);
+            }
+            else{
+                this.setState({
+                    failure: true,
+                    submitted: false,
+                    activationFailure: true
+                })
+            }
+        })
+    }
+
+    verifyPassword(response){
+        UserDataService.verifyPassword(this.state.password, response.data.password)
+        .then(res => {
+            const success = res.data
+            
+            if(success){
+                this.setState({
+                    failure: false,
+                    currentUser: response.data
+                })
+                cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+                cookies.set("role", response.data.role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+
+                // Change last login
+                UserDataService.updateLogin(this.state.username, this.state.currentUser);
+                this.props.router.navigate("/");
+            }
+            else{
+                this.setState({
+                    failure: true,
+                    submitted: false,
+                })
+            }
+        })
+        .catch(e => {
+            this.setState({
+                failure: true,
+                submitted: false,
+            })
+            console.log(e);
+        })
     }
 
     goCreateAccount(e){

@@ -20,6 +20,8 @@ class AccountForm extends Component{
         this.returnToLogin = this.returnToLogin.bind(this);
         this.submitForm = this.submitForm.bind(this);
         this.getMaxCount = this.getMaxCount.bind(this);
+        this.prepareRegistrationEmail = this.prepareRegistrationEmail.bind(this);
+        this.createUserStatusToken = this.createUserStatusToken.bind(this);
 
         this.state = {
             username: "",
@@ -174,38 +176,7 @@ class AccountForm extends Component{
                 user_id: response.data.user_id,
                 isactive: false,
             }
-            StatusDataService.create(status)
-            .then(createdResp => {
-                this.setState({
-                    accountCreated: true
-                })
-                
-                StatusDataService.get(response.data.user_id)
-                .then(tokenResp => {
-                    console.log(tokenResp);
-                    TokenDataService.sendRegistrationEmail(response.data.username, response.data.email, tokenResp.data.code, tokenResp.data.token)
-                    .then(sent => {
-
-                    })
-                    .catch(e => {
-                        window.scrollTo(0, 0)
-                        this.setState({
-                            failure: true,
-                            uniqueFailure: false,
-                            submitted: false
-                        })
-                    })
-                })
-            })
-            .catch(e => {
-                window.scrollTo(0, 0)
-                this.setState({
-                    failure: true,
-                    uniqueFailure: false,
-                    submitted: false
-                })
-            });
-
+            this.createUserStatusToken(status, response);
         })
         .catch(e => {
             window.scrollTo(0, 0)
@@ -214,6 +185,44 @@ class AccountForm extends Component{
                 uniqueFailure: false
             })
             console.log(e);
+        })
+    }
+
+    createUserStatusToken(status, response){
+        StatusDataService.create(status)
+        .then(createdResp => {
+            console.log(createdResp);
+            this.setState({
+                accountCreated: true
+            })
+            this.prepareRegistrationEmail(response);
+        })
+        .catch(e => {
+            window.scrollTo(0, 0)
+            this.setState({
+                failure: true,
+                uniqueFailure: false,
+                submitted: false
+            })
+        });
+    }
+
+    prepareRegistrationEmail(response){
+        StatusDataService.get(response.data.user_id)
+        .then(tokenResp => {
+            console.log(tokenResp);
+            TokenDataService.sendRegistrationEmail(response.data.username, response.data.email, tokenResp.data.code, tokenResp.data.token)
+            .then(sent => {
+                console.log(sent);
+            })
+            .catch(e => {
+                window.scrollTo(0, 0)
+                this.setState({
+                    failure: true,
+                    uniqueFailure: false,
+                    submitted: false
+                })
+            })
         })
     }
 

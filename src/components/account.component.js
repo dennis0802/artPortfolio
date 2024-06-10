@@ -6,6 +6,7 @@ import { Button, Modal } from 'react-bootstrap';
 import UserDataService from '../service/user.service';
 import TokenDataService from '../service/token.service';
 import StatusDataService from '../service/status.service';
+import FeedbackDataService from '../service/feedback.service';
 
 const cookies = new Cookies();
 
@@ -21,6 +22,10 @@ class Account extends Component{
         this.onChangeEmail = this.onChangeEmail.bind(this);
         this.updateUser = this.updateUser.bind(this);
         this.deleteAccount = this.deleteAccount.bind(this);
+        this.deleteUserToken = this.deleteUserToken.bind(this);
+        this.deleteUserComments = this.deleteUserComments.bind(this);
+        this.deleteUserStatus = this.deleteUserStatus.bind(this);
+        this.logout = this.logout.bind(this);
 
         this.state = {
             currentUser: {
@@ -215,33 +220,47 @@ class Account extends Component{
     }
 
     deleteAccount(){
-        TokenDataService.delete(this.state.currentUser.user_id)
-        .then(resp => {
-          StatusDataService.delete(this.state.currentUser.user_id)
-          .then(statusResp => {
-            UserDataService.delete(this.state.currentUser.username)
-            .then(response => {
-              console.log(response.data);
-              
-              const currentUser = cookies.get('user');
-              const role = cookies.get('role');
-              cookies.remove("user", currentUser, {path: "/", maxAge: 43200, sameSite: "strict", secure: true});
-              cookies.remove("role", role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true});
-    
-              this.closeDeletePrompt();
-              this.propts.router.navigate("/")
-            })
-            .catch(e => {
-              console.log(e);
-            });
-          })
-          .catch(e => {
-            console.log(e);
-          });
-        })
-        .catch(e => {
-          console.log(e);
-        });
+        this.deleteUserToken();
+    }
+
+    deleteUserToken(){
+      TokenDataService.delete(this.state.currentUser.user_id)
+      .then(resp => {
+        this.deleteUserStatus();
+      })
+      .catch(e => {
+        console.log(e);
+      });
+    }
+
+    deleteUserStatus(){
+      StatusDataService.delete(this.state.currentUser.user_id)
+      .then(resp => {
+        this.deleteUserComments();
+      })
+      .catch(e => {
+        console.log(e);
+      })
+    }
+
+    deleteUserComments(){
+      FeedbackDataService.deleteByUser(this.state.currentUser.user_id)
+      .then(resp => {
+        this.logout();
+      })
+      .catch(e => {
+        console.log(e);
+      })
+    }
+
+    logout(){
+      const currentUser = cookies.get('user');
+      const role = cookies.get('role');
+
+      this.closeDeletePrompt();
+      cookies.remove("user", currentUser, {path: "/", maxAge: 43200, sameSite: "strict", secure: true});
+      cookies.remove("role", role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true});
+      this.propts.router.navigate("/")
     }
 
     render(){

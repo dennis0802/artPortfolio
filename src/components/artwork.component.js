@@ -8,6 +8,7 @@ import { Button, Modal } from "react-bootstrap";
 import Cookies from "universal-cookie";
 import { Navigate } from "react-router-dom";
 import LoadingComponent from "./loading.component";
+import FeedbackDataService from "../service/feedback.service";
 
 const cookies = new Cookies();
 
@@ -25,6 +26,7 @@ class Artwork extends Component {
     this.closeDeletePrompt = this.closeDeletePrompt.bind(this);
     this.launchDeletePrompt = this.launchDeletePrompt.bind(this);
     this.returnToList = this.returnToList.bind(this);
+    this.postDeletionComment = this.postDeletionComment.bind(this);
 
     this.state = {
       currentArtwork: {
@@ -230,15 +232,23 @@ class Artwork extends Component {
       value: this.state.oldArtwork
     })
 
+    FeedbackDataService.deleteByArt(this.state.currentArtwork.id)
+    .then(response => {
+      console.log(response);
+      this.postDeletionComment();
+    })
+  }
+
+  postDeletionComment(){
     ArtworkDataService.delete(this.state.currentArtwork.id)
-      .then(response => {
-        console.log(response.data);
-        this.closeDeletePrompt();
-        this.returnToList();
-      })
-      .catch(e => {
-        console.log(e);
-      });
+    .then(response => {
+      console.log(response.data);
+      this.closeDeletePrompt();
+      this.returnToList();
+    })
+    .catch(e => {
+      console.log(e);
+    });
   }
 
   render() {

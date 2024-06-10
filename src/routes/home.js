@@ -15,6 +15,13 @@ const Home = () => {
 
                 <h2>Latest Pieces</h2>
                 <Carousel className="mb-3" style={{backgroundColor: "gray"}}>
+                    <Carousel.Item>
+                        <Image src="./img/Brianna's Declaration of Complete Resignation (no text).png" width={480} height={255} alt="Latest pieces" rounded/>
+                        <Carousel.Caption>
+                        <h4>Kate's Pool Race</h4>
+                        <p>June 2024</p>
+                        </Carousel.Caption>
+                    </Carousel.Item>
                     <Carousel.Item >
                         <Image src="./img/Madison.png" width={480} height={255} alt="Latest pieces" rounded/>
                         <Carousel.Caption>
