@@ -51,7 +51,7 @@ class Artwork extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props.router.params.id);
+    //console.log(this.props.router.params.id);
     this.getArtwork(this.props.router.params.id);
   }
 
@@ -75,7 +75,7 @@ class Artwork extends Component {
 
     //FILE INFO NAME WILL BE "uploaded", the uploaded file will be "uploaded_<datestamp>_<file name>"
     formData.append('uploaded', file, fileName);
-    console.log(formData.get('uploaded'));
+    //console.log(formData.get('uploaded'));
 
     this.setState(function(prevState) {
       return{
@@ -137,13 +137,13 @@ class Artwork extends Component {
           pageLoaded: true
         });
 
-        console.log(response.data);
+        //console.log(response.data);
       })
       .catch(e => {
         this.setState({
           networkError: true
         })
-        console.log(e);
+        //console.log(e);
       });
   }
 
@@ -153,7 +153,7 @@ class Artwork extends Component {
       this.state.currentArtwork
     )
       .then(response => {
-        console.log(response.data);
+        //console.log(response.data);
         this.setState({
           error: false,
           success: true,
@@ -163,16 +163,16 @@ class Artwork extends Component {
 
         // Image changed
         if(this.state.newName !== this.state.oldArtwork){
-          axios.post('http://localhost:8080/image-upload', this.state.currentArtwork.file)
+          axios.post('https://localhost:8080/image-upload', this.state.currentArtwork.file)
           .then(res => {
-            console.log('Axios response: ', res)
+            //console.log('Axios response: ', res)
           })
 
-          axios.post('http://localhost:8080/image-delete',{
+          axios.post('https://localhost:8080/image-delete',{
             value: this.state.oldArtwork
           })
           .then(res => {
-            console.log('Axios response: ' + res);
+            //console.log('Axios response: ' + res);
           })
         }
 
@@ -185,7 +185,7 @@ class Artwork extends Component {
           success: false
         })
         window.scrollTo(0, 0)
-        console.log(e);
+        //console.log(e);
       });
   }
 
@@ -228,13 +228,13 @@ class Artwork extends Component {
   }
 
   deleteArtwork() {
-    axios.post('http://localhost:8080/image-delete',{
+    axios.post('https://localhost:8080/image-delete',{
       value: this.state.oldArtwork
     })
 
     FeedbackDataService.deleteByArt(this.state.currentArtwork.id)
     .then(response => {
-      console.log(response);
+      //console.log(response);
       this.postDeletionComment();
     })
   }
@@ -242,12 +242,12 @@ class Artwork extends Component {
   postDeletionComment(){
     ArtworkDataService.delete(this.state.currentArtwork.id)
     .then(response => {
-      console.log(response.data);
+      //console.log(response.data);
       this.closeDeletePrompt();
       this.returnToList();
     })
     .catch(e => {
-      console.log(e);
+      //console.log(e);
     });
   }
 
@@ -326,7 +326,7 @@ class Artwork extends Component {
                       <p>Currently: {this.state.oldArtwork}</p>
                       <p><b>NOTE: Leave the image field blank if you do not want to change the image.</b></p>
                       <Image 
-                        src={`http://localhost:8080/uploads/${this.state.oldArtwork}`} 
+                        src={`https://localhost:8080/uploads/${this.state.oldArtwork}`} 
                         rounded 
                         alt="The image could not be found or processed."
                         className="mb-3"

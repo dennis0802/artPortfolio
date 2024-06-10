@@ -63,7 +63,7 @@ class Account extends Component{
     
           })
           .catch(e => {
-            console.log(e);
+            //console.log(e);
           });
     }
 
@@ -145,7 +145,7 @@ class Account extends Component{
             this.setState({
                 failure: true
             })
-            console.log(e);
+            //console.log(e);
         })
 
         UserDataService.getByEmail(this.state.currentUser.email)
@@ -161,7 +161,7 @@ class Account extends Component{
             this.setState({
                 failure: true
             })
-            console.log(e);
+            //console.log(e);
         })
 
         if(!this.state.failure){
@@ -193,7 +193,7 @@ class Account extends Component{
 
             UserDataService.update(cookies.get('user'), data)
             .then(response => {
-                console.log(response);
+                //console.log(response);
                 // If username has changed, login session changes accordingly.
                 if(this.state.oldUsername !== this.state.currentUser.username){
                     cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
@@ -211,7 +211,7 @@ class Account extends Component{
                 window.scrollTo(0,0);
             })
             .catch(e => {
-                console.log(e);
+                //console.log(e);
             })
         }
         else{
@@ -229,7 +229,7 @@ class Account extends Component{
         this.deleteUserStatus();
       })
       .catch(e => {
-        console.log(e);
+        //console.log(e);
       });
     }
 
@@ -239,7 +239,7 @@ class Account extends Component{
         this.deleteUserComments();
       })
       .catch(e => {
-        console.log(e);
+        //console.log(e);
       })
     }
 
@@ -249,7 +249,7 @@ class Account extends Component{
         this.logout();
       })
       .catch(e => {
-        console.log(e);
+        //console.log(e);
       })
     }
 

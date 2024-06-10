@@ -38,14 +38,14 @@ class ResetForm extends Component {
     }
 
     componentDidMount() {
-        //console.log(this.props.router.params.token);
+        ////console.log(this.props.router.params.token);
         this.verifyToken(this.props.router.params.token);
     }
 
     verifyToken(){
         TokenDataService.findByToken(this.props.router.params.token)
         .then(response => {
-            //console.log(response);
+            ////console.log(response);
             this.setState({
                 initialLoad: true,
                 currentToken: response.data
@@ -79,11 +79,11 @@ class ResetForm extends Component {
 
             })
             .catch(e2 => {
-                console.log(e2);
+                //console.log(e2);
             })
         })
         .catch(e => {
-            console.log(e);
+            //console.log(e);
         })
     }
 
@@ -131,7 +131,7 @@ class ResetForm extends Component {
             this.getUserFromToken(response);
         })
         .catch(e => {
-            console.log(e);
+            //console.log(e);
             this.setState({
                 passwordError: true
             })
@@ -156,7 +156,7 @@ class ResetForm extends Component {
             this.updatePassword(userResponse, user);
         })
         .catch(e => {
-            console.log(e);
+            //console.log(e);
             this.setState({
                 passwordError: true
             })
@@ -172,7 +172,7 @@ class ResetForm extends Component {
             this.deleteToken(this.props.router.params.token);
         })
         .catch(e => {
-            console.log(e);
+            //console.log(e);
             this.setState({
                 passwordError: true
             })

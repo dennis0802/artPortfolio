@@ -135,7 +135,7 @@ class FeedbackForm extends Component{
 
         FeedbackDataService.create(feedback)
         .then(response => {
-            console.log(response);
+            //console.log(response);
             this.setState({
                 submitted: true
             })
@@ -147,7 +147,7 @@ class FeedbackForm extends Component{
             this.findAverageRating();
         })
         .catch(e => {
-            console.log(e);
+            //console.log(e);
             this.setState({
                 submitted: false,
                 editing: false,
@@ -187,10 +187,15 @@ class FeedbackForm extends Component{
                 users: response.data
             })
         })
+        .catch(e => {
+            this.setState({
+                networkError: true
+            })
+        })
     }
 
     deletePrompt(id){
-        console.log(id);
+        //console.log(id);
         this.setState({
             target: id,
             deleting: true

@@ -1,5 +1,8 @@
 import React, { Component, Fragment } from "react";
 import UserDataService from "../service/user.service";
+import TokenDataService from "../service/token.service";
+import FeedbackDataService from "../service/feedback.service";
+import StatusDataService from "../service/status.service";
 import '../styles.css';
 import { Button, Modal, Pagination } from "react-bootstrap";
 import Cookies from "universal-cookie";
@@ -62,7 +65,7 @@ export default class UserList extends Component {
 
       })
       .catch((e) => {
-        console.log(e);
+        //console.log(e);
       });
 
     UserDataService.getAllUnpaged(searchQuery)
@@ -161,10 +164,10 @@ export default class UserList extends Component {
           page: 1,
           pageChangeLoading: false
         });
-        console.log(response.data);
+        //console.log(response.data);
       })
       .catch(e => {
-        console.log(e);
+        //console.log(e);
       });
 
       UserDataService.getAllUnpaged(this.state.searchQuery)
@@ -176,7 +179,7 @@ export default class UserList extends Component {
         })
       })
       .catch((e) => {
-        console.log(e);
+        //console.log(e);
         this.setState({
           networkError: true
         })
@@ -200,9 +203,42 @@ export default class UserList extends Component {
     }
   }
 
+  deleteUser(){
+    this.deleteUserToken();
+  }
+
+  deleteUserToken(){
+    TokenDataService.delete(this.state.currentUser.user_id)
+    .then(resp => {
+      this.deleteUserStatus();
+    })
+    .catch(e => {
+      //console.log(e);
+    });
+  }
+
+  deleteUserStatus(){
+    StatusDataService.delete(this.state.currentUser.user_id)
+    .then(resp => {
+      this.deleteUserComments();
+    })
+    .catch(e => {
+      //console.log(e);
+    })
+  }
+
+  deleteUserComments(){
+    FeedbackDataService.deleteByUser(this.state.currentUser.user_id)
+    .then(resp => {
+      this.logout();
+    })
+    .catch(e => {
+      //console.log(e);
+    })
+  }
+
   render() {
     const { searchQuery, users, currentUser, currentIndex, pageSize, page } = this.state;
-    const year = this.props.year;
 
     return (
     <>
@@ -302,13 +338,13 @@ export default class UserList extends Component {
                       <Modal.Header closeButton>
                       <Modal.Title>Delete {currentUser.username}</Modal.Title>
                       </Modal.Header>
-                      <Modal.Body>Are you sure you want to delete all user from {year}?</Modal.Body>
+                      <Modal.Body>Are you sure you want to delete user {currentUser.username}?</Modal.Body>
                       <Modal.Footer>
                       <Button variant="secondary" onClick={this.closeDeletePrompt}>
                           Cancel
                       </Button>
                       <Button variant="danger" onClick={this.deleteUser}>
-                          Remove All
+                          Delete User
                       </Button>
                       </Modal.Footer>
                   </Modal>
@@ -347,7 +383,7 @@ export default class UserList extends Component {
 
                 {cookies.get('role') === 'ADMIN' && currentUser.username !== 'rootUser' ? 
                   <Button
-                    onClick={() => {console.log("placeholder")}}
+                    onClick={this.launchDeletePrompt}
                     variant="danger"
                   >
                     Delete

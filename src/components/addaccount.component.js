@@ -55,7 +55,7 @@ class AccountForm extends Component{
             })
         })
         .catch((e) => {
-            console.log(e);
+            //console.log(e);
             this.setState({
                 submitted: true,
                 networkError: true
@@ -70,7 +70,7 @@ class AccountForm extends Component{
             })
         })
         .catch((e) => {
-            console.log(e);
+            //console.log(e);
             this.setState({
                 submitted: true,
                 networkError: true
@@ -119,7 +119,7 @@ class AccountForm extends Component{
         // Check for uniqueness
         UserDataService.getByUsername(this.state.username)
             .then(response => {
-                console.log(response.data);
+                //console.log(response.data);
                 if(response.data.length !== 0){
                     this.setState({
                         failure: true,
@@ -134,12 +134,12 @@ class AccountForm extends Component{
                     uniqueFailure: false,
                     submitted: false
                 })
-                console.log(e);
+                //console.log(e);
             })
 
         UserDataService.getByEmail(this.state.email)
             .then(response => {
-                console.log(response.data);
+                //console.log(response.data);
                 if(response.data.length !== 0){
                     this.setState({
                         failure: true,
@@ -155,7 +155,7 @@ class AccountForm extends Component{
                     uniqueFailure: false,
                     submitted: false
                 })
-                console.log(e);
+                //console.log(e);
             })
 
         UserDataService.create(data)
@@ -169,7 +169,7 @@ class AccountForm extends Component{
                 reflection: response.data.reflection,
         
             });
-            console.log(response.data);
+            //console.log(response.data);
 
             var status = {
                 id: this.state.statusCount + 1,
@@ -184,14 +184,14 @@ class AccountForm extends Component{
                 failure: true,
                 uniqueFailure: false
             })
-            console.log(e);
+            //console.log(e);
         })
     }
 
     createUserStatusToken(status, response){
         StatusDataService.create(status)
         .then(createdResp => {
-            console.log(createdResp);
+            //console.log(createdResp);
             this.setState({
                 accountCreated: true
             })
@@ -210,10 +210,10 @@ class AccountForm extends Component{
     prepareRegistrationEmail(response){
         StatusDataService.get(response.data.user_id)
         .then(tokenResp => {
-            console.log(tokenResp);
+            //console.log(tokenResp);
             TokenDataService.sendRegistrationEmail(response.data.username, response.data.email, tokenResp.data.code, tokenResp.data.token)
             .then(sent => {
-                console.log(sent);
+                //console.log(sent);
             })
             .catch(e => {
                 window.scrollTo(0, 0)

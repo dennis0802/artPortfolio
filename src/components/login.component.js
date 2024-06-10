@@ -65,7 +65,7 @@ class LoginForm extends Component{
                     failure: true,
                     submitted: false,
                 })
-                console.log(e);
+                //console.log(e);
             })
     }
 
@@ -73,7 +73,7 @@ class LoginForm extends Component{
         // Verify user is activated
         StatusDataService.get(response.data.user_id)
         .then(verifyRes => {
-            console.log(verifyRes);
+            //console.log(verifyRes);
 
             // Verify details match
             if(verifyRes.data.isactive){
@@ -118,7 +118,7 @@ class LoginForm extends Component{
                 failure: true,
                 submitted: false,
             })
-            console.log(e);
+            //console.log(e);
         })
     }
 

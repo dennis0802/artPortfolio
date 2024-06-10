@@ -18,7 +18,7 @@ class ArtworkDataService {
   }
 
   create(data) {
-    console.log(data);
+    //console.log(data);
     return http.post("/artwork", data);
   }
 

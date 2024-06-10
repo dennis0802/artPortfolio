@@ -51,7 +51,7 @@ export default class AddArtwork extends Component{
         })
       })
       .catch((e) => {
-        console.log(e);
+        //console.log(e);
         this.setState({
           networkError: true
         })
@@ -98,7 +98,7 @@ export default class AddArtwork extends Component{
     
     // Save artwork
     saveArtwork() {
-      console.log(this.state.year);
+      //console.log(this.state.year);
       var data = {
           id: this.state.count + 1,
           imagedata: this.state.imagename,
@@ -121,19 +121,19 @@ export default class AddArtwork extends Component{
             submitted: true
           });
 
-          axios.post('http://localhost:8080/image-upload', this.state.imagedata)
+          axios.post('https://localhost:8080/image-upload', this.state.imagedata)
           .then(res => {
-            console.log('Axios response: ', res)
+            //console.log('Axios response: ', res)
           })
           window.scrollTo(0, 0)
-          console.log(response.data);
+          //console.log(response.data);
         })
         .catch(e => {
           this.setState({
             message: "ERROR"
           })
           window.scrollTo(0, 0)
-          console.log(e);
+          //console.log(e);
         });
     }
   

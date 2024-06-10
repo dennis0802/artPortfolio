@@ -48,7 +48,7 @@ class RecoveryForm extends Component{
             })
         })
         .catch((e) => {
-            console.log(e);
+            //console.log(e);
             this.setState({
                 networkError: true
             })
@@ -73,7 +73,7 @@ class RecoveryForm extends Component{
             this.setState({
                 failure: true
             })
-            console.log(e);
+            //console.log(e);
         })
     }
 
@@ -119,7 +119,7 @@ class RecoveryForm extends Component{
     sendEmail(userId, username, email){
         TokenDataService.findByUser(userId)
         .then(newTokenResponse => {
-            console.log(newTokenResponse.data);
+            //console.log(newTokenResponse.data);
             TokenDataService.sendResetEmail(username, email, newTokenResponse.data.code, newTokenResponse.data.content);
         })
         .catch(e => {

@@ -14,7 +14,7 @@ class StatusDataService {
     }
 
     create(data) {
-        console.log(data);
+        //console.log(data);
         return http.post("/tokens/registration", data);
     }
 

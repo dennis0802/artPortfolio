@@ -69,7 +69,7 @@ export default class ArtList extends Component {
 
       })
       .catch((e) => {
-        console.log(e);
+        //console.log(e);
       });
 
     ArtworkDataService.getAllUnpaged(year, searchTitle)
@@ -83,7 +83,7 @@ export default class ArtList extends Component {
       })
     })
     .catch((e) => {
-      console.log(e);
+      //console.log(e);
       this.setState({
         networkError: true
       })
@@ -170,7 +170,7 @@ export default class ArtList extends Component {
     const year = this.props.year;
     ArtworkDataService.deleteAllByYear(year)
       .then(response => {
-        console.log(response.data);
+        //console.log(response.data);
         this.closeDeletePrompt();
         this.refreshList();
         this.setState({
@@ -182,7 +182,7 @@ export default class ArtList extends Component {
         window.scrollTo(0,0);
       })
       .catch(e => {
-        console.log(e);
+        //console.log(e);
       });
   }
 
@@ -219,10 +219,10 @@ export default class ArtList extends Component {
           page: 1,
           pageChangeLoading: false
         });
-        console.log(response.data);
+        //console.log(response.data);
       })
       .catch(e => {
-        console.log(e);
+        //console.log(e);
       });
 
       ArtworkDataService.getAllUnpaged(year, this.state.searchTitle)
@@ -234,7 +234,7 @@ export default class ArtList extends Component {
         })
       })
       .catch(e => {
-        console.log(e);
+        //console.log(e);
       })
     }
   }
@@ -397,7 +397,7 @@ export default class ArtList extends Component {
                   <Modal.Body className="text-center">
                     <Image 
                         alt="The image could not be found or processed."
-                        src={`http://localhost:8080/uploads/${currentArtwork.imagedata}`}
+                        src={`https://localhost:8080/uploads/${currentArtwork.imagedata}`}
                         rounded
                         className="img-fluid"
                     />
@@ -421,6 +421,7 @@ export default class ArtList extends Component {
                     </Button>
                   </Modal.Footer>
                 </Modal>
+
                 <Fragment>
                   <label>
                     <h3>{currentArtwork.title}</h3>
@@ -430,7 +431,7 @@ export default class ArtList extends Component {
                 <Figure>
                   <Figure.Image
                     alt="The image could not be found or processed."
-                    src={`http://localhost:8080/uploads/${currentArtwork.imagedata}`}
+                    src={`https://localhost:8080/uploads/${currentArtwork.imagedata}`}
                     onClick={this.launchEnlarge}
                     rounded
                   />

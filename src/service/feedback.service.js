@@ -2,7 +2,7 @@ import http from "../http-common";
 
 class FeedbackDataService {
     create(data) {
-        console.log(data);
+        //console.log(data);
         return http.post("/feedback", data);
     }
 

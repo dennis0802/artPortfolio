@@ -38,14 +38,14 @@ class RegistrationForm extends Component {
     }
 
     componentDidMount() {
-        //console.log(this.props.router.params.token);
+        ////console.log(this.props.router.params.token);
         this.verifyToken(this.props.router.params.token);
     }
 
     verifyToken(){
         StatusDataService.findByToken(this.props.router.params.token)
         .then(response => {
-            console.log(response);
+            //console.log(response);
             this.setState({
                 initialLoad: true,
                 currentToken: response.data
@@ -90,7 +90,7 @@ class RegistrationForm extends Component {
             this.setNewToken(response, newToken)
         })
         .catch(e => {
-            console.log(e);
+            //console.log(e);
         })
     }
 
@@ -100,7 +100,7 @@ class RegistrationForm extends Component {
             this.findUserFromStatus(response);
         })
         .catch(e2 => {
-            console.log(e2);
+            //console.log(e2);
         })
     }
 
@@ -110,7 +110,7 @@ class RegistrationForm extends Component {
             this.sendNewEmail(response, resp);
         })
         .catch(e3 => {
-            console.log(e3);
+            //console.log(e3);
         })
     }
 
@@ -121,7 +121,7 @@ class RegistrationForm extends Component {
             this.props.router.navigate("/");
         })
         .catch(e4 => {
-            console.log(e4);
+            //console.log(e4);
         })
     }
 
@@ -134,11 +134,11 @@ class RegistrationForm extends Component {
 
             })
             .catch(e2 => {
-                console.log(e2);
+                //console.log(e2);
             })
         })
         .catch(e => {
-            console.log(e);
+            //console.log(e);
         })
     }
 
