@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import ArtworkService from "../service/artwork.service";
+import TokenDataService from "../service/token.service";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { Navigate } from "react-router-dom";
@@ -19,6 +20,7 @@ export default class AddArtwork extends Component{
         this.newArtwork = this.newArtwork.bind(this);
         this.getMaxCount = this.getMaxCount.bind(this);
         this.returnToList = this.returnToList.bind(this);
+        this.checkJWT = this.checkJWT.bind(this);
 
         this.state = {
             id: null,
@@ -33,13 +35,27 @@ export default class AddArtwork extends Component{
 
             submitted: false,
             count: 0,
-            message: ""
+            message: "",
+            loggedInAdmin: false,
         }
     };
 
     // On rendering, get max count
     componentDidMount() {
       this.getMaxCount();
+      this.checkJWT();
+    }
+
+    checkJWT(){
+      TokenDataService.decodeJWT(cookies.get('session'))
+      .then(response =>{
+        this.setState({
+          loggedInAdmin: response.data.role === 'ADMIN'
+        })
+      })
+      .catch({
+  
+      })
     }
 
     // Get max count for new records (new records will have id of max+1)
@@ -187,7 +203,7 @@ export default class AddArtwork extends Component{
         <>
         {this.state.pageLoaded ? 
           (<>
-          {cookies.get('role') === 'ADMIN' ?
+          {this.state.loggedInAdmin ?
             <div className="submit-form">
               {this.state.submitted ? (
                 <>

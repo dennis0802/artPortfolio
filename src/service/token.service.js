@@ -28,6 +28,14 @@ class TokenDataService{
     sendRegistrationEmail(username, email, code, token){
         return http.post(`/emails/register/${username}/${email}/${code}/${token}`)
     }
+
+    createJWT(data){
+        return http.post(`tokens/JWT`, data);
+    }
+
+    decodeJWT(data){
+        return http.post(`tokens/decodeJWT`, data);
+    }
 }
 
 export default new TokenDataService();

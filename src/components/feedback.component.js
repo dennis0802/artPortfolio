@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { withRouter } from '../common/with-router';
 import FeedbackDataService from '../service/feedback.service';
+import TokenDataService from '../service/token.service';
 import UserDataService from '../service/user.service';
 import Cookies from 'universal-cookie';
 import { Button, Modal, Table } from 'react-bootstrap';
@@ -26,6 +27,7 @@ class FeedbackForm extends Component{
         this.onChangeExistingComment = this.onChangeExistingComment.bind(this);
         this.onChangeExistingRating = this.onChangeExistingRating.bind(this);
         this.submitCommentChanges = this.submitCommentChanges.bind(this);
+        this.checkJWT = this.checkJWT.bind(this);
 
         this.state = {
             comment: "",
@@ -50,16 +52,30 @@ class FeedbackForm extends Component{
                 rating: "",
                 comment: "",
             },
-            editingError: false
+            editingError: false,
+            loggedIn: false
         }
     }
 
     componentDidMount(){
         this.findMaxID();
-        this.findUserID();
         this.getFeedbackByArt();
         this.getUsers();
         this.findAverageRating();
+        this.checkJWT();
+    }
+
+    checkJWT(){
+        TokenDataService.decodeJWT(cookies.get('session'))
+        .then(response =>{
+          this.setState({
+            loggedIn: response.data.role === 'ADMIN' || response.data.role === 'USER',
+            userSubmitting: response.data.user_id
+          })
+        })
+        .catch(e => {
+
+        })
     }
 
     findMaxID(){
@@ -67,28 +83,6 @@ class FeedbackForm extends Component{
         .then(response => {
             this.setState({
                 count: response.data.max === null ? 0 : response.data.max
-            })
-        })
-        .catch(e => {
-            this.setState({
-                networkError: true
-            })
-        })
-    }
-
-    findUserID(){
-        const username = cookies.get('user');
-
-        if(!username){
-            this.setState({
-                userSubmitting: null
-            })
-        }
-
-        UserDataService.getByUsername(username)
-        .then(response => {
-            this.setState({
-                userSubmitting: response.data.user_id
             })
         })
         .catch(e => {
@@ -141,7 +135,6 @@ class FeedbackForm extends Component{
             })
 
             this.findMaxID();
-            this.findUserID();
             this.getFeedbackByArt();
             this.getUsers();
             this.findAverageRating();
@@ -236,7 +229,6 @@ class FeedbackForm extends Component{
                 deleting: false,
             })
             this.findMaxID();
-            this.findUserID();
             this.getFeedbackByArt();
             this.getUsers();
             this.findAverageRating();
@@ -321,7 +313,7 @@ class FeedbackForm extends Component{
                     <p><b>Average Rating: {average ? rounded + "/5" : "No ratings available"}</b></p>
                     {!this.state.submitted ?
                     <>
-                    {cookies.get('role') ?
+                    {this.state.loggedIn ?
                         <>
                             {this.state.feedbackError ? 
                                 <div style={{color: "red", outline: "1px dashed red"}}>

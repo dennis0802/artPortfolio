@@ -21,6 +21,7 @@ class ResetForm extends Component {
         this.deleteToken = this.deleteToken.bind(this);
         this.getUserFromToken = this.getUserFromToken.bind(this);
         this.updatePassword = this.updatePassword.bind(this);
+        this.checkJWT = this.checkJWT.bind(this);
 
         this.state = {
             initialLoad: false,
@@ -33,13 +34,27 @@ class ResetForm extends Component {
             password: "",
             passwordConfirm: "",
             passwordError: false,
-            pageLoadError: false
+            pageLoadError: false,
+            loggedIn: false
         }
     }
 
     componentDidMount() {
         ////console.log(this.props.router.params.token);
         this.verifyToken(this.props.router.params.token);
+        this.checkJWT();
+    }
+
+    checkJWT(){
+        TokenDataService.decodeJWT(cookies.get('session'))
+        .then(response =>{
+          this.setState({
+            loggedIn: response.data.role === 'ADMIN' || response.data.role === 'USER'
+          })
+        })
+        .catch({
+
+        })
     }
 
     verifyToken(){
@@ -182,9 +197,9 @@ class ResetForm extends Component {
     render(){
         return(
             <>
-            {!cookies.get('role') ?
+            {this.state.initialLoad ?
                 (<>
-                {this.state.initialLoad ?
+                {!this.state.loggedIn ?
                     (<>
                         {this.state.currentToken && !this.state.expired ?
                             (<>
@@ -305,21 +320,23 @@ class ResetForm extends Component {
                         }
                     </>)
                 :
-                    (<>
-                        {this.state.pageLoadError ?
-                            (<p>Your token could not be verified. Ensure that it is valid and your network connection is stable.</p>)
-                        :
-                        (<>
-                            <LoadingComponent />
-                            <p>Loading...</p>
-                        </>)
-                        }
-                    </>)
+                    (
+                        <Navigate to="/" />
+                    )
                 }
                 </>)
-                :
-                <Navigate to="/" />
-                }
+            :
+                <>
+                    {this.state.pageLoadError ?
+                        (<p>Your token could not be verified. Ensure that it is valid and your network connection is stable.</p>)
+                    :
+                    (<>
+                        <LoadingComponent />
+                        <p>Loading...</p>
+                    </>)
+                    }
+                </>
+            }
             </>
         )
     }

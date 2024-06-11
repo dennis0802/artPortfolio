@@ -22,6 +22,7 @@ class AccountForm extends Component{
         this.getMaxCount = this.getMaxCount.bind(this);
         this.prepareRegistrationEmail = this.prepareRegistrationEmail.bind(this);
         this.createUserStatusToken = this.createUserStatusToken.bind(this);
+        this.checkJWT = this.checkJWT.bind(this);
 
         this.state = {
             username: "",
@@ -39,12 +40,26 @@ class AccountForm extends Component{
             
             submitted: true,
             accountCreated: true,
-            initialLoad: false
+            initialLoad: false,
+            loggedIn: true
         }
     }
 
     componentDidMount(){
         this.getMaxCount();
+        this.checkJWT();
+    }
+
+    checkJWT(){
+        TokenDataService.decodeJWT(cookies.get('session'))
+        .then(response =>{
+          this.setState({
+            loggedIn: response.data.role === 'ADMIN' || response.data.role === 'USER'
+          })
+        })
+        .catch({
+
+        })
     }
 
     // Get max count for new records (new records will have id of max+1)
@@ -233,7 +248,7 @@ class AccountForm extends Component{
     render(){
         return(
             <>
-            {!cookies.get('role') ?
+            {!this.state.loggedIn ?
                 (<>
                     {!this.state.submitted ? 
                     (<div className="submit-form">

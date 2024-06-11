@@ -9,6 +9,7 @@ import Cookies from "universal-cookie";
 import { Navigate } from "react-router-dom";
 import LoadingComponent from "./loading.component";
 import FeedbackDataService from "../service/feedback.service";
+import TokenDataService from "../service/token.service";
 
 const cookies = new Cookies();
 
@@ -27,6 +28,7 @@ class Artwork extends Component {
     this.launchDeletePrompt = this.launchDeletePrompt.bind(this);
     this.returnToList = this.returnToList.bind(this);
     this.postDeletionComment = this.postDeletionComment.bind(this);
+    this.checkJWT = this.checkJWT.bind(this);
 
     this.state = {
       currentArtwork: {
@@ -46,13 +48,27 @@ class Artwork extends Component {
       success: false,
       yearToReturnTo: "",
       pageLoaded: false,
-      networkError: false
+      networkError: false,
+      loggedInAdmin: false,
     };
   }
 
   componentDidMount() {
     //console.log(this.props.router.params.id);
     this.getArtwork(this.props.router.params.id);
+    this.checkJWT();
+  }
+
+  checkJWT(){
+    TokenDataService.decodeJWT(cookies.get('session'))
+    .then(response =>{
+      this.setState({
+        loggedInAdmin: response.data.role === 'ADMIN'
+      })
+    })
+    .catch({
+
+    })
   }
 
   onChangeTitle(e) {
@@ -258,7 +274,7 @@ class Artwork extends Component {
       <>
         {this.state.pageLoaded ?
         (<>
-          {cookies.get('role') === 'ADMIN' ?
+          {this.state.loggedInAdmin ?
           <div>
             {currentArtwork ? (
               <div className="edit-form">

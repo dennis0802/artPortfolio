@@ -17,6 +17,7 @@ class RecoveryForm extends Component{
         this.returnToIndex = this.returnToIndex.bind(this);
         this.getMaxId = this.getMaxId.bind(this);
         this.sendEmail = this.sendEmail.bind(this);
+        this.checkJWT = this.checkJWT.bind(this);
 
         this.state = {
             email: "",
@@ -25,12 +26,26 @@ class RecoveryForm extends Component{
             initialLoad: false,
             networkError: false,
             count: 0,
-            id: -1
+            id: -1,
+            loggedIn: false
         }
     }
 
     componentDidMount(){
         this.getMaxId();
+        this.checkJWT();
+    }
+
+    checkJWT(){
+        TokenDataService.decodeJWT(cookies.get('session'))
+        .then(response =>{
+          this.setState({
+            loggedIn: response.data.role === 'ADMIN' || response.data.role === 'USER'
+          })
+        })
+        .catch({
+
+        })
     }
 
     onChangeEmail(e){
@@ -142,7 +157,7 @@ class RecoveryForm extends Component{
             <>
             {this.state.initialLoad ?
                 <>
-                {!cookies.get('role') ? 
+                {!this.state.loggedIn ? 
                     !this.state.submitted ?
                         <div className="submit-form">
                             {this.state.failure ?  

@@ -23,6 +23,7 @@ export default class UserList extends Component {
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.retrieveUsersPaged = this.retrieveUsersPaged.bind(this);
     this.setPage = this.setPage.bind(this);
+    this.checkJWT = this.checkJWT.bind(this);
 
     this.state = {
       users: [],
@@ -35,6 +36,7 @@ export default class UserList extends Component {
       pageLoading: true,
       pageChangeLoading: false,
       networkError: false,
+      loggedInAdmin: false,
       
       page: 1,
       pageSize: 5,
@@ -46,7 +48,17 @@ export default class UserList extends Component {
   }
 
   componentDidMount() {
+    this.checkJWT();
     this.retrieveUsersPaged();
+  }
+
+  checkJWT(){
+    TokenDataService.decodeJWT(cookies.get('session'))
+    .then(response =>{
+      this.setState({
+        loggedInAdmin: response.data.role === 'ADMIN'
+      })
+    })
   }
 
   // Retrieve users through a paging model
@@ -244,7 +256,7 @@ export default class UserList extends Component {
     <>
       {!this.state.pageLoading ?
       (<>
-        {cookies.get('role') === 'ADMIN' ?
+        {this.state.loggedInAdmin ?
         <div className="list row" style={{marginLeft:"100px"}}>
           <div className="col-md-8">
             <div className="input-group mb-3">
@@ -381,7 +393,7 @@ export default class UserList extends Component {
 
                 <br/>
 
-                {cookies.get('role') === 'ADMIN' && currentUser.username !== 'rootUser' ? 
+                {this.state.loggedInAdmin && currentUser.username !== 'rootUser' ? 
                   <Button
                     onClick={this.launchDeletePrompt}
                     variant="danger"

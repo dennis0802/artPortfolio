@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import ArtworkDataService from "../service/artwork.service";
+import TokenDataService from "../service/token.service";
 import { Link } from "react-router-dom";
 import '../styles.css';
 import { Button, Figure, Image, Modal, Pagination} from "react-bootstrap";
@@ -25,6 +26,7 @@ export default class ArtList extends Component {
     this.setPage = this.setPage.bind(this);
     this.launchEnlarge = this.launchEnlarge.bind(this);
     this.closeEnlarge = this.closeEnlarge.bind(this);
+    this.checkJWT = this.checkJWT.bind(this);
 
     this.state = {
       artworks: [],
@@ -42,7 +44,7 @@ export default class ArtList extends Component {
       pageSize: 5,
       fullCount: 0,
       pageCount: 1,
-      average: 0
+      loggedInAdmin: false
     };
 
     this.pageSizes = [5, 10, 15];
@@ -50,6 +52,19 @@ export default class ArtList extends Component {
 
   componentDidMount() {
     this.retrieveArtworksPaged();
+    this.checkJWT();
+  }
+
+  checkJWT(){
+    TokenDataService.decodeJWT(cookies.get('session'))
+    .then(response =>{
+      this.setState({
+        loggedInAdmin: response.data.role === 'ADMIN'
+      })
+    })
+    .catch({
+
+    })
   }
 
   // Retrieve artworks through a paging model
@@ -327,7 +342,7 @@ export default class ArtList extends Component {
             <p>Try clicking a selected artwork's image to enlarge it to view more details and feedback!</p>
             {!this.state.pageChangeLoading ?
             <>
-              {cookies.get('role') === 'ADMIN' ? 
+              {this.state.loggedInAdmin ? 
                 <button
                   className="m-3 btn btn-sm btn-primary"
                   onClick={this.addArtwork}
@@ -363,7 +378,7 @@ export default class ArtList extends Component {
 
             <p>Page {page} of {this.state.pageCount === 0 ? 1 : this.state.pageCount}</p>
             
-            {cookies.get('role') === 'ADMIN' ? 
+            {this.state.loggedInAdmin ? 
               <button
                 className="m-3 btn btn-sm btn-danger"
                 onClick={this.launchDeletePrompt}
@@ -448,7 +463,7 @@ export default class ArtList extends Component {
                 </Fragment>
                 <br/>
 
-                {cookies.get('role') === 'ADMIN' ? 
+                {this.state.loggedInAdmin ? 
                   <Link
                     to={"/artwork/" + currentArtwork.id}
                     className="badge bg-warning mb-3"

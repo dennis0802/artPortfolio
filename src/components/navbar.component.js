@@ -3,10 +3,29 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
 import Cookies from "universal-cookie"
+import TokenDataService from "../service/token.service"
+import { useEffect, useState } from 'react';
 
 const cookies = new Cookies();
 
 function MainNavbar({selected}) {
+      const [loggedInUser, setLoggedInUser] = useState(false);
+      const [loggedInAdmin, setLoggedInAdmin] = useState(false);
+      const [user, setUser] = useState("")
+
+      const isVerified = function(){
+        TokenDataService.decodeJWT(cookies.get('session'))
+        .then(response =>{
+          setLoggedInAdmin(response.data.role === 'ADMIN');
+          setLoggedInUser(response.data.role === 'USER');
+          setUser(response.data.username);
+        })
+      }
+
+      useEffect(() => {
+        isVerified();
+      });
+
       return (
           <header>
             <Navbar expand="lg" className="bg-body-tertiary" data-bs-theme="dark">
@@ -80,7 +99,7 @@ function MainNavbar({selected}) {
                       </NavDropdown>
                     }
 
-                    {cookies.get('role') === 'ADMIN' ? 
+                    {loggedInAdmin ? 
                       selected.id === 5 ?
                       <Nav.Link href="/users" style={{backgroundColor:"#101720", borderRadius: "10px"}}>View Users</Nav.Link>
                       :
@@ -89,9 +108,9 @@ function MainNavbar({selected}) {
                     ""
                     }
 
-                    {cookies.get('user') !== undefined ? 
+                    {loggedInAdmin || loggedInUser ? 
                       selected.id === 4 ?
-                      <NavDropdown title={cookies.get('user')} id="basic-nav-dropdown" data-bs-theme="dark" style={{backgroundColor:"#101720", borderRadius: "10px"}}>
+                      <NavDropdown title={user} id="basic-nav-dropdown" data-bs-theme="dark" style={{backgroundColor:"#101720", borderRadius: "10px"}}>
                       {selected.subId === 1 ?
                         <NavDropdown.Item href="/account" style={{backgroundColor:"#101720", borderRadius: "10px"}}>Manage Your Info</NavDropdown.Item>
                       :
@@ -104,7 +123,7 @@ function MainNavbar({selected}) {
                       }
                       </NavDropdown>
                       :
-                      <NavDropdown title={cookies.get('user')} id="basic-nav-dropdown">
+                      <NavDropdown title={user} id="basic-nav-dropdown">
                         <NavDropdown.Item href="/account">Manage Your Info</NavDropdown.Item>
                         <NavDropdown.Item href="/logout" >Logout</NavDropdown.Item> 
                       </NavDropdown>

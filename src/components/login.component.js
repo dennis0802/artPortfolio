@@ -5,6 +5,7 @@ import StatusDataService from '../service/status.service';
 import Cookies from "universal-cookie"
 import { Navigate } from 'react-router-dom';
 import LoadingComponent from './loading.component';
+import TokenDataService from '../service/token.service';
 
 const cookies = new Cookies();
 const date = new Date();
@@ -19,16 +20,35 @@ class LoginForm extends Component{
         this.goCreateAccount = this.goCreateAccount.bind(this);
         this.verifyActivation = this.verifyActivation.bind(this);
         this.verifyPassword = this.verifyPassword.bind(this);
+        this.setJWT = this.setJWT.bind(this);
+        this.checkJWT = this.checkJWT.bind(this);
 
         this.state = {
             username: "",
             password: "",
             failure: false,
             activationFailure: false,
+            loggedIn: false,
             currentUser: {
                 last_login: date
             }
         }
+    }
+
+    componentDidMount(){
+        this.checkJWT();
+    }
+
+    checkJWT(){
+        TokenDataService.decodeJWT(cookies.get('session'))
+        .then(response =>{
+          this.setState({
+            loggedIn: response.data.role === 'ADMIN' || response.data.role === 'USER'
+          })
+        })
+        .catch({
+
+        })
     }
 
     onChangeUsername(e){
@@ -99,8 +119,7 @@ class LoginForm extends Component{
                     failure: false,
                     currentUser: response.data
                 })
-                cookies.set("user", response.data.username, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
-                cookies.set("role", response.data.role, {path: "/", maxAge: 43200, sameSite: "strict", secure: true})
+                this.setJWT(response.data);
 
                 // Change last login
                 UserDataService.updateLogin(this.state.username, this.state.currentUser);
@@ -122,6 +141,17 @@ class LoginForm extends Component{
         })
     }
 
+    setJWT(data){
+        TokenDataService.createJWT(data)
+        .then(responseJWT => {
+            //console.log(responseJWT);
+            cookies.set("session", responseJWT, {path: "/", maxAge: 10800, sameSite: "strict", secure: true})
+        })
+        .catch(e =>{
+            //console.log(e);
+        })
+    }
+
     goCreateAccount(e){
         this.props.router.navigate("/createAccount")
     }
@@ -135,7 +165,7 @@ class LoginForm extends Component{
             <>
                 {!this.state.submitted ?
                 (<>
-                    {!cookies.get('role') ? 
+                    {!this.state.loggedIn ? 
                     <div className="submit-form">
                         {this.state.failure ? 
                             <div style={{color: "red", outline: "1px dashed red"}}>
