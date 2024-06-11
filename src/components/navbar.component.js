@@ -20,6 +20,9 @@ function MainNavbar({selected}) {
           setLoggedInUser(response.data.role === 'USER');
           setUser(response.data.username);
         })
+        .catch(e => {
+          
+        })
       }
 
       useEffect(() => {

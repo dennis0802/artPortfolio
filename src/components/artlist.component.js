@@ -62,7 +62,7 @@ export default class ArtList extends Component {
         loggedInAdmin: response.data.role === 'ADMIN'
       })
     })
-    .catch({
+    .catch(e => {
 
     })
   }
