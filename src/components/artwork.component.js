@@ -63,7 +63,8 @@ class Artwork extends Component {
     TokenDataService.decodeJWT(cookies.get('session'))
     .then(response =>{
       this.setState({
-        loggedInAdmin: response.data.role === 'ADMIN'
+        loggedInAdmin: response.data.role === 'ADMIN',
+        pageLoaded: true
       })
     })
     .catch({
@@ -150,7 +151,6 @@ class Artwork extends Component {
           oldArtwork: response.data.imagedata,
           newName: response.data.imagedata,
           yearToReturnTo: response.data.year,
-          pageLoaded: true
         });
 
         //console.log(response.data);
